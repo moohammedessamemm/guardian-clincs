@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { Header } from '@/components/landing/header'
+import { SiteHeader } from '@/components/layout/site-header'
 import { Button } from '@/components/ui/button'
 import { ArrowRight, Globe, ShieldCheck, HeartPulse, UserCheck, AlertCircle, Plane } from 'lucide-react'
 import { VideoModal } from '@/components/landing/video-modal'
@@ -43,7 +43,7 @@ export default function MissionPage() {
 
     return (
         <div className="min-h-screen bg-white font-sans text-slate-900">
-            <Header />
+            <SiteHeader />
 
             {/* Custom Header Design - Doctor Background with Overlay */}
             <div className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 min-h-[60vh] flex items-center justify-center overflow-hidden">

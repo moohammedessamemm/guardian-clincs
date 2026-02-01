@@ -1,7 +1,8 @@
 import { redirect } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/server'
-import { Sidebar } from '@/components/dashboard/sidebar'
+import { DashboardSidebar } from '@/components/layout/dashboard-sidebar'
+import { MobileDashboardNav } from '@/components/layout/mobile-dashboard-nav'
 import { UserNav } from '@/components/dashboard/user-nav'
 import { AiAssistant } from '@/components/dashboard/ai-assistant'
 import { NotificationBell } from '@/components/dashboard/notification-bell'
@@ -35,11 +36,14 @@ export default async function DashboardLayout({
 
     return (
         <div className="flex min-h-screen">
-            <Sidebar role={role} />
+            <DashboardSidebar role={role} />
             <div className="flex-1 flex flex-col">
                 <header className="sticky top-0 z-30 flex h-20 items-center justify-between border-b border-gray-100 bg-white/80 px-8 backdrop-blur-md transition-all">
                     {/* Modern Centered Search - "Spotlight" feel */}
-                    <DashboardSearch />
+                    <div className="flex items-center gap-4">
+                        <MobileDashboardNav role={role} />
+                        <DashboardSearch />
+                    </div>
 
                     <div className="flex items-center gap-4">
                         <NotificationBell />

@@ -16,7 +16,7 @@ import {
   CheckCircle2
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Header } from '@/components/landing/header'
+import { SiteHeader } from '@/components/layout/site-header'
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -35,7 +35,7 @@ const stagger = {
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-white font-sans text-slate-900 selection:bg-blue-100 selection:text-blue-900">
-      <Header />
+      <SiteHeader />
 
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
