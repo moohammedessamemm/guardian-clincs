@@ -1,0 +1,130 @@
+@import "tailwindcss";
+
+
+
+:root {
+  color-scheme: light;
+  --background: 0 0% 100%;
+  /* Pure White */
+  --foreground: 220 10% 20%;
+  /* Dark Charcoal */
+
+  --card: 0 0% 100%;
+  --card-foreground: 220 10% 20%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 220 10% 20%;
+
+  /* Mayo Clinic Brand Blue: #004b87 */
+  /* HSL: 207, 100%, 26% */
+  --primary: 207 100% 26%;
+  --primary-foreground: 0 0% 100%;
+
+  /* Light Gray Backgrounds */
+  --secondary: 210 20% 96%;
+  --secondary-foreground: 220 10% 20%;
+
+  --muted: 210 20% 96%;
+  --muted-foreground: 220 10% 40%;
+
+  /* Accent Blue (Lighter) */
+  --accent: 207 100% 96%;
+  --accent-foreground: 207 100% 26%;
+
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 0 0% 98%;
+
+  --border: 220 13% 91%;
+  --input: 220 13% 91%;
+  --ring: 207 100% 26%;
+
+  --radius: 0.5rem;
+  /* Classic, professional border radius */
+}
+
+
+
+@theme inline {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+
+  --font-sans: Helvetica Neue, Arial, sans-serif;
+  --font-mono: Courier New, monospace;
+}
+
+body {
+  @apply bg-background text-foreground;
+  font-feature-settings: "rlig" 1, "calt" 1;
+}
+
+/* Guardian Header Style */
+.guardian-header {
+  background-color: hsl(207, 100%, 26%);
+  /* #004b87 */
+  color: white;
+}
+
+/* Force White Background Globally */
+html,
+body {
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+  color-scheme: light !important;
+  scroll-behavior: smooth;
+  scroll-padding-top: 80px;
+  /* Offset for fixed header */
+}
+
+/* Custom Animations */
+@keyframes gradient-xy {
+  0% {
+    background-position: 0% 0%;
+  }
+
+  50% {
+    background-position: 100% 100%;
+  }
+
+  100% {
+    background-position: 0% 0%;
+  }
+}
+
+.animate-gradient-xy {
+  animation: gradient-xy 15s ease infinite;
+}
+
+@keyframes ken-burns {
+  0% {
+    transform: scale(1);
+  }
+
+  100% {
+    transform: scale(1.1);
+  }
+}
+
+.animate-ken-burns {
+  animation: ken-burns 20s ease-in-out infinite alternate;
+}
