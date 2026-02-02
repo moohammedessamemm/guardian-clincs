@@ -25,8 +25,18 @@ export function DashboardSidebar({ role }: SidebarProps) {
                 <div className="px-3 py-2">
                     {/* Logo Area */}
                     <div className="mb-8 px-6 flex flex-col items-center group cursor-default">
-                        <div className="w-48 h-32 relative transform transition-transform duration-500 group-hover:scale-105">
-                            <Image src="/guardian-logo.png" alt="Guardian Clinics" fill className="object-contain relative z-10" priority />
+                        <div className="w-20 h-20 relative mb-4 bg-white rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] ring-1 ring-slate-100 flex items-center justify-center transform transition-transform duration-500 group-hover:scale-105 group-hover:rotate-1">
+                            <div className="absolute inset-0 rounded-[1.5rem] bg-gradient-to-tr from-blue-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                            <Image src="/guardian-clinics-logo.png" alt="Guardian Clinics" fill className="object-contain p-2 relative z-10" priority />
+                        </div>
+                        <h2 className="text-xl font-bold tracking-tight text-slate-900 text-center leading-none flex flex-col gap-0.5">
+                            <span className="text-slate-800">Guardian</span>
+                            <span className="text-[#004b87] bg-clip-text text-transparent bg-gradient-to-r from-[#004b87] to-[#0062b1]">Clinics</span>
+                        </h2>
+                        <div className="mt-3 flex items-center gap-2">
+                            <div className="h-[1px] w-3 bg-slate-200"></div>
+                            <p className="text-[10px] text-slate-400 font-bold tracking-[0.25em] uppercase">Enterprise</p>
+                            <div className="h-[1px] w-3 bg-slate-200"></div>
                         </div>
                     </div>
 
