@@ -98,6 +98,7 @@ export function BookingWizard({ onComplete }: WizardProps) {
         }
     }, [selectedDoctor])
 
+
     // Calculate slots when Date changes (or Step to ensure freshness)
     useEffect(() => {
         if (selectedDate && selectedDoctor && step === 3) {
@@ -130,9 +131,7 @@ export function BookingWizard({ onComplete }: WizardProps) {
                         current = addMinutes(current, currentDuration)
                     }
 
-                    // 2. Fetch Existing Appointments (Try RPC first for security/accuracy)
-                    // Note: We reverted the strict "Locking" RPC but still use the "secure" RPC if available 
-                    // or just fallback to the standard select which is simpler and "safe enough" for now 
+                    // 2. Fetch Existing Appointments
                     const startOfDay = new Date(selectedDate!)
                     startOfDay.setHours(0, 0, 0, 0)
                     const endOfDay = new Date(selectedDate!)
@@ -140,12 +139,11 @@ export function BookingWizard({ onComplete }: WizardProps) {
 
                     let bookedTimes: string[] = []
 
-                    // Fallback to standard select (Simple, reliable availability)
                     const { data: existing, error } = await supabase
                         .from('appointments')
                         .select('start_time')
                         .eq('doctor_id', selectedDoctor)
-                        .in('status', ['pending', 'confirmed']) // Standard status check
+                        .in('status', ['pending', 'confirmed']) // Only active appointments block slots
                         .gte('start_time', startOfDay.toISOString())
                         .lte('start_time', endOfDay.toISOString())
 
@@ -180,6 +178,51 @@ export function BookingWizard({ onComplete }: WizardProps) {
 
         }
     }, [selectedDate, selectedDoctor, schedules, step, selectedTime])
+
+    // Real-time subscription: Refresh slots when appointments change
+    useEffect(() => {
+        if (!selectedDoctor || !selectedDate || step !== 3) return
+
+        const startOfDay = new Date(selectedDate)
+        startOfDay.setHours(0, 0, 0, 0)
+        const endOfDay = new Date(selectedDate)
+        endOfDay.setHours(23, 59, 59, 999)
+
+        // Subscribe to appointment changes for this doctor
+        const channel = supabase
+            .channel(`appointments-${selectedDoctor}-${selectedDate.toISOString()}`)
+            .on(
+                'postgres_changes',
+                {
+                    event: '*', // Listen to INSERT, UPDATE, DELETE
+                    schema: 'public',
+                    table: 'appointments',
+                    filter: `doctor_id=eq.${selectedDoctor}`
+                },
+                (payload: any) => {
+                    console.log('Appointment change detected:', payload)
+
+                    // Check if the change affects the selected date
+                    const startTime = payload.new?.start_time || payload.old?.start_time
+                    if (!startTime) return
+
+                    const appointmentDate = new Date(startTime)
+
+                    if (appointmentDate >= startOfDay && appointmentDate <= endOfDay) {
+                        // Recalculate slots by toggling calculating state
+                        setCalculating(true)
+                        // Trigger recalculation by updating a dependency
+                        setSelectedTime(prev => prev) // Force re-render
+                    }
+                }
+            )
+            .subscribe()
+
+        return () => {
+            supabase.removeChannel(channel)
+        }
+    }, [selectedDoctor, selectedDate, step])
+
 
     const handleTimeClick = (time: string, available: boolean) => {
         if (!available) return
@@ -389,22 +432,55 @@ export function BookingWizard({ onComplete }: WizardProps) {
                                                     key={time}
                                                     variant={selectedTime === time ? "default" : (available ? "outline" : "ghost")}
                                                     className={`
-                                                h-12 relative overflow-hidden transition-all duration-200
-                                                ${!available
-                                                            ? "bg-red-50 text-red-300 border-red-100 cursor-not-allowed hover:bg-red-50 hover:text-red-300 opacity-80" // Standard disabled style
+                                                        h-14 relative overflow-hidden transition-all duration-300 group
+                                                        ${!available
+                                                            ? "bg-gradient-to-br from-red-50 to-rose-50 text-red-400 border-red-100 cursor-not-allowed hover:from-red-50 hover:to-rose-50 hover:border-red-100 opacity-90 shadow-sm"
                                                             : selectedTime === time
-                                                                ? "bg-[#004b87] hover:bg-[#003865] shadow-md scale-105 border-[#004b87] z-10"
-                                                                : "hover:border-[#004b87] hover:text-[#004b87] hover:bg-blue-50/50 border-slate-200 text-slate-600"
+                                                                ? "bg-[#004b87] hover:bg-[#003865] shadow-lg scale-105 border-[#004b87] z-10 shadow-blue-900/20"
+                                                                : "hover:border-[#004b87] hover:text-[#004b87] hover:bg-blue-50/50 border-slate-200 text-slate-600 hover:scale-102 hover:shadow-md"
                                                         }
-                                            `}
+                                                    `}
                                                     disabled={!available}
                                                     onClick={() => handleTimeClick(time, available)}
                                                 >
+                                                    {/* Animated background for selected */}
                                                     {selectedTime === time && (
                                                         <div className="absolute inset-0 bg-white/10 animate-pulse" />
                                                     )}
-                                                    <Clock className={`w-4 h-4 mr-2 ${selectedTime === time ? "opacity-100" : "opacity-50"}`} />
-                                                    {time}
+
+                                                    {/* Diagonal stripes for booked slots */}
+                                                    {!available && (
+                                                        <div className="absolute inset-0 opacity-5" style={{
+                                                            backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(239, 68, 68, 0.1) 10px, rgba(239, 68, 68, 0.1) 20px)'
+                                                        }} />
+                                                    )}
+
+                                                    <div className="relative z-10 flex items-center justify-center gap-2">
+                                                        {!available ? (
+                                                            <>
+                                                                <div className="flex items-center gap-2">
+                                                                    <svg className="w-4 h-4 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                                                                        <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                                                                    </svg>
+                                                                    <span className="font-semibold line-through decoration-2">{time}</span>
+                                                                </div>
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <Clock className={`w-4 h-4 transition-transform duration-300 ${selectedTime === time ? "opacity-100 scale-110" : "opacity-50 group-hover:scale-110"}`} />
+                                                                <span className="font-semibold">{time}</span>
+                                                            </>
+                                                        )}
+                                                    </div>
+
+                                                    {/* "BOOKED" label for unavailable slots */}
+                                                    {!available && (
+                                                        <div className="absolute -bottom-1 left-0 right-0 bg-gradient-to-t from-red-100/80 to-transparent pt-3 pb-1">
+                                                            <span className="text-[9px] font-bold uppercase tracking-wider text-red-500 block text-center">
+                                                                Booked
+                                                            </span>
+                                                        </div>
+                                                    )}
                                                 </Button>
                                             ))}
                                         </div>
