@@ -199,8 +199,8 @@ export default function RegisterPage() {
                         <div className="text-center space-y-4">
                             {/* Logo */}
                             <Link href="/" className="mb-12 block transform hover:scale-105 transition-transform duration-300">
-                                <div className="relative w-12 h-12 bg-white rounded-xl shadow-sm p-2 ring-1 ring-slate-100">
-                                    <Image src="/logo-v2.png" alt="Guardian Clinics" fill className="object-contain" />
+                                <div className="relative w-24 h-24 bg-white rounded-xl shadow-sm p-2 ring-1 ring-slate-100">
+                                    <Image src="/guardian-logo.png" alt="Guardian Clinics" fill className="object-contain" />
                                 </div>
                             </Link>
                             <div>

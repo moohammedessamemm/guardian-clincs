@@ -78,7 +78,7 @@ export default function LoginPage() {
 
                 <div className="relative z-10 max-w-xl text-center space-y-8 backdrop-blur-sm bg-black/10 p-8 rounded-3xl border border-white/10 shadow-2xl">
                     <div className="flex items-center justify-center mx-auto">
-                        <Image src="/logo.png" alt="Guardian Clinics" width={220} height={110} className="object-contain drop-shadow-lg" />
+                        <Image src="/guardian-logo.png" alt="Guardian Clinics" width={220} height={110} className="object-contain drop-shadow-lg" />
                     </div>
                     <p className="text-lg text-blue-50 leading-relaxed font-light drop-shadow-md">
                         Experience healthcare reimagined. Access your records, schedule appointments, and connect with top specialists seamlessly.
@@ -96,9 +96,9 @@ export default function LoginPage() {
 
                     <form onSubmit={handleLogin} className="space-y-6">
                         <div className="mb-8 flex justify-center">
-                            <div className="relative w-16 h-16 bg-white rounded-2xl shadow-sm p-3 ring-1 ring-slate-100 flex items-center justify-center">
+                            <div className="relative w-24 h-24 bg-white rounded-2xl shadow-sm p-3 ring-1 ring-slate-100 flex items-center justify-center">
                                 <Image
-                                    src="/logo-v2.png"
+                                    src="/guardian-logo.png"
                                     alt="Guardian Clinics"
                                     fill
                                     className="object-contain p-1"
