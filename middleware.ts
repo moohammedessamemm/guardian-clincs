@@ -14,7 +14,7 @@ export function middleware(request: NextRequest) {
 
     const cspHeader = `
     default-src 'self';
-    script-src 'self' 'unsafe-inline' 'unsafe-eval';
+    script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com;
     style-src 'self' 'unsafe-inline';
     img-src 'self' blob: data: https:;
     font-src 'self';
@@ -22,7 +22,7 @@ export function middleware(request: NextRequest) {
     base-uri 'self';
     form-action 'self';
     frame-ancestors 'none';
-    frame-src 'self' https://*.google.com https://*.googleapis.com https://*.youtube.com;
+    frame-src 'self' https://*.google.com https://*.googleapis.com https://*.youtube.com https://challenges.cloudflare.com;
     connect-src 'self' https:;
     upgrade-insecure-requests;
   `
