@@ -17,6 +17,8 @@ import {
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { SiteHeader } from '@/components/layout/site-header'
+import { useState, useEffect } from 'react'
+import { createClient } from '@/lib/supabase/client'
 import { AiAssistant } from '@/components/dashboard/ai-assistant'
 
 const fadeInUp = {
@@ -34,12 +36,26 @@ const stagger = {
 }
 
 export default function LandingPage() {
+  const [bookingLink, setBookingLink] = useState('/register')
+
+  useEffect(() => {
+    const checkUser = async () => {
+      const supabase = createClient()
+      const { data: { session } } = await supabase.auth.getSession()
+      if (session) {
+        setBookingLink('/appointments/new')
+      }
+    }
+    checkUser()
+  }, [])
+
   return (
     <div className="min-h-screen bg-white font-sans text-slate-900 selection:bg-blue-100 selection:text-blue-900">
       <SiteHeader />
 
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
+
         <div className="absolute top-0 right-0 -z-10 w-full h-full bg-slate-50 opacity-50" />
         <div className="absolute top-0 right-0 -z-10 w-1/2 h-full bg-blue-50/30 blur-3xl rounded-full translate-x-1/2 -translate-y-1/4" />
 
@@ -66,7 +82,7 @@ export default function LandingPage() {
 
             <motion.div variants={fadeInUp} className="flex flex-col sm:flex-row gap-4 pt-4">
               <Button size="lg" className="h-14 px-8 text-base bg-[#004b87] hover:bg-[#003865] text-white rounded-full shadow-xl shadow-blue-900/10 group" asChild>
-                <Link href="/register">
+                <Link href={bookingLink}>
                   Book an Appointment
                   <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
                 </Link>
@@ -298,7 +314,7 @@ export default function LandingPage() {
 
           <div className="flex flex-col sm:flex-row justify-center gap-4 mb-16">
             <Button size="lg" className="bg-white text-[#004b87] hover:bg-blue-50 rounded-full font-bold px-8 h-12" asChild>
-              <Link href="/register">Book Now</Link>
+              <Link href={bookingLink}>Book Now</Link>
             </Button>
             <Button size="lg" variant="outline" className="border-slate-700 text-slate-300 hover:bg-slate-800 rounded-full h-12">
               Contact Us

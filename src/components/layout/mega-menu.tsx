@@ -99,9 +99,12 @@ export function MegaMenu() {
                                 <h4 className="font-bold text-slate-900">Not sure what you need?</h4>
                                 <p className="text-sm text-slate-500">Check our symptom checker or call us.</p>
                             </div>
-                            <Link href="/contact" className="text-sm font-bold text-[#004b87] hover:underline">
+                            <button
+                                onClick={() => window.dispatchEvent(new Event('open-chat'))}
+                                className="text-sm font-bold text-[#004b87] hover:underline"
+                            >
                                 Contact Support →
-                            </Link>
+                            </button>
                         </div>
                     </div>
                 </div>

@@ -29,6 +29,12 @@ export function AiAssistant() {
         }
     }, [messages])
 
+    useEffect(() => {
+        const handleOpenChat = () => setIsOpen(true)
+        window.addEventListener('open-chat', handleOpenChat)
+        return () => window.removeEventListener('open-chat', handleOpenChat)
+    }, [])
+
     const handleSend = async () => {
         if (!input.trim()) return
 
