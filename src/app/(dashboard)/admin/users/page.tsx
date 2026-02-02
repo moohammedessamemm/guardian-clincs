@@ -21,8 +21,20 @@ import {
 } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
-import { Search, Loader2 } from 'lucide-react'
+import { Search, Loader2, Lock, KeyRound, Trash2, AlertTriangle } from 'lucide-react'
 import { toast } from 'sonner'
+import { Button } from "@/components/ui/button"
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
+import { updateUserPassword, deleteUser } from "@/actions/admin-users"
 
 interface Profile {
     id: string
@@ -38,6 +50,18 @@ export default function AdminUsersPage() {
     const [loading, setLoading] = useState(true)
     const [updating, setUpdating] = useState<string | null>(null)
     const [searchTerm, setSearchTerm] = useState('')
+
+    // Password Reset State
+    const [resetDialogOpen, setResetDialogOpen] = useState(false)
+    const [selectedUser, setSelectedUser] = useState<Profile | null>(null)
+    const [newPassword, setNewPassword] = useState('')
+
+    const [resetLoading, setResetLoading] = useState(false)
+
+    // Delete User State
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+    const [userToDelete, setUserToDelete] = useState<Profile | null>(null)
+    const [deleteLoading, setDeleteLoading] = useState(false)
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -71,6 +95,66 @@ export default function AdminUsersPage() {
             setUsers(originalUsers) // Revert
         }
         setUpdating(null)
+    }
+
+    const handlePasswordReset = async (e: React.FormEvent) => {
+        e.preventDefault()
+        if (!selectedUser || !newPassword) return
+
+        if (newPassword.length < 6) {
+            toast.error('Password must be at least 6 characters long')
+            return
+        }
+
+        setResetLoading(true)
+        try {
+            const result = await updateUserPassword(selectedUser.id, newPassword)
+
+            if (result.error) {
+                toast.error(result.error)
+            } else {
+                toast.success(`Password updated for ${selectedUser.full_name}`)
+                setResetDialogOpen(false)
+                setNewPassword('')
+                setSelectedUser(null)
+            }
+        } catch (error) {
+            toast.error('Failed to update password')
+        } finally {
+            setResetLoading(false)
+        }
+    }
+
+    const openResetDialog = (user: Profile) => {
+        setSelectedUser(user)
+        setNewPassword('')
+        setResetDialogOpen(true)
+    }
+
+    const openDeleteDialog = (user: Profile) => {
+        setUserToDelete(user)
+        setDeleteDialogOpen(true)
+    }
+
+    const handleDeleteUser = async () => {
+        if (!userToDelete) return
+        setDeleteLoading(true)
+        try {
+            const result = await deleteUser(userToDelete.id)
+            if (result.error) {
+                toast.error(result.error)
+            } else {
+                toast.success(`User ${userToDelete.full_name} deleted successfully`)
+                setDeleteDialogOpen(false)
+                setUserToDelete(null)
+                // Optimistically remove from list
+                setUsers(users.filter(u => u.id !== userToDelete.id))
+            }
+        } catch (error) {
+            toast.error('Failed to delete user')
+        } finally {
+            setDeleteLoading(false)
+        }
     }
 
     const filteredUsers = users.filter(user =>
@@ -125,6 +209,7 @@ export default function AdminUsersPage() {
                                         <TableHead className="font-bold text-slate-800 uppercase text-xs tracking-wider">Assigned Role</TableHead>
                                         <TableHead className="font-bold text-slate-800 uppercase text-xs tracking-wider">Contact Email</TableHead>
                                         <TableHead className="font-bold text-slate-800 uppercase text-xs tracking-wider">Joined</TableHead>
+                                        <TableHead className="font-bold text-slate-800 uppercase text-xs tracking-wider text-right">Actions</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -179,6 +264,30 @@ export default function AdminUsersPage() {
                                                         day: 'numeric'
                                                     })}
                                                 </TableCell>
+                                                <TableCell className="text-right">
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        onClick={() => openResetDialog(user)}
+                                                        className="h-8 w-8 p-0 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-full"
+                                                        title="Change Password"
+                                                    >
+                                                        <KeyRound className="h-4 w-4" />
+                                                        <span className="sr-only">Change Password</span>
+                                                    </Button>
+
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        onClick={() => openDeleteDialog(user)}
+                                                        disabled={user.role === 'admin'} // Prevent deleting admins? Maybe allow but be careful. Let's prevent for safety.
+                                                        className="h-8 w-8 p-0 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-full"
+                                                        title="Delete User"
+                                                    >
+                                                        <Trash2 className="h-4 w-4" />
+                                                        <span className="sr-only">Delete User</span>
+                                                    </Button>
+                                                </TableCell>
                                             </TableRow>
                                         ))
                                     )}
@@ -188,6 +297,71 @@ export default function AdminUsersPage() {
                     )}
                 </CardContent>
             </Card>
+
+            <Dialog open={resetDialogOpen} onOpenChange={setResetDialogOpen}>
+                <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                        <DialogTitle>Change Password</DialogTitle>
+                        <DialogDescription>
+                            Enter a new password for <span className="font-medium text-slate-900">{selectedUser?.full_name}</span>.
+                            This will immediately update their login credentials.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <form onSubmit={handlePasswordReset} className="space-y-4 py-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="new-password">New Password</Label>
+                            <Input
+                                id="new-password"
+                                type="text"
+                                value={newPassword}
+                                onChange={(e) => setNewPassword(e.target.value)}
+                                placeholder="Enter strong password..."
+                                className="font-mono"
+                                autoComplete="off"
+                            />
+                        </div>
+                        <DialogFooter>
+                            <Button type="button" variant="secondary" onClick={() => setResetDialogOpen(false)}>
+                                Cancel
+                            </Button>
+                            <Button type="submit" disabled={!newPassword || resetLoading} className="bg-[#004b87] hover:bg-[#003865]">
+                                {resetLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                Update Password
+                            </Button>
+                        </DialogFooter>
+                    </form>
+                </DialogContent>
+            </Dialog>
+            <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+                <DialogContent className="sm:max-w-md border-red-200">
+                    <DialogHeader>
+                        <div className="flex items-center gap-2 text-red-600 mb-2">
+                            <AlertTriangle className="h-5 w-5" />
+                            <DialogTitle className="text-red-700">Delete User Account</DialogTitle>
+                        </div>
+                        <DialogDescription className="text-slate-600">
+                            Are you sure you want to permanently delete <span className="font-bold text-slate-900">{userToDelete?.full_name}</span>?
+                            <br /><br />
+                            This action cannot be undone. All user data, appointments, and history will be removed.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter className="mt-4 gap-2 sm:gap-0">
+                        <Button type="button" variant="outline" onClick={() => setDeleteDialogOpen(false)}>
+                            Cancel
+                        </Button>
+                        <Button
+                            type="button"
+                            variant="destructive"
+                            onClick={handleDeleteUser}
+                            disabled={deleteLoading}
+                            className="bg-red-600 hover:bg-red-700 text-white"
+                        >
+                            {deleteLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            Delete Permanently
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     )
 }
