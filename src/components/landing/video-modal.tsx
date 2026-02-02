@@ -17,7 +17,7 @@ export function VideoModal({ videoId, thumbnailSrc, title }: VideoModalProps) {
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
-                <div className="relative rounded-[2rem] overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 cursor-pointer group aspect-video w-full bg-slate-100">
+                <div className="relative rounded-[2rem] overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 cursor-pointer group aspect-video w-full bg-slate-100 active:scale-[0.98] active:shadow-sm">
                     <Image
                         src={thumbnailSrc}
                         alt={title}
@@ -27,7 +27,7 @@ export function VideoModal({ videoId, thumbnailSrc, title }: VideoModalProps) {
                     <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-colors duration-500" />
 
                     <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center pl-1 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                        <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center pl-1 shadow-lg group-hover:scale-110 transition-transform duration-300 animate-pulse">
                             <Play className="w-6 h-6 sm:w-8 sm:h-8 text-[#e11d48] fill-[#e11d48]" />
                         </div>
                     </div>

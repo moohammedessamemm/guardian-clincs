@@ -17,6 +17,7 @@ import {
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { SiteHeader } from '@/components/layout/site-header'
+import { AiAssistant } from '@/components/dashboard/ai-assistant'
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -313,6 +314,7 @@ export default function LandingPage() {
           </div>
         </div>
       </footer >
+      <AiAssistant />
     </div >
   )
 }

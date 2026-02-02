@@ -6,12 +6,16 @@ import {
     Settings,
     Users,
     FlaskConical,
-    Clock
+    Clock,
+    Home
 } from 'lucide-react'
 
 export type Role = 'patient' | 'doctor' | 'staff' | 'admin'
 
 export const dashboardLinks = [
+    // Common Links
+    { label: 'Home', href: '/', icon: Home, roles: ['patient', 'doctor', 'staff', 'admin'] },
+
     // Patient Links
     { label: 'Overview', href: '/patient', icon: LayoutDashboard, roles: ['patient'] },
     { label: 'My Appointments', href: '/patient/appointments', icon: Calendar, roles: ['patient'] },

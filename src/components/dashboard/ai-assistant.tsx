@@ -65,7 +65,7 @@ export function AiAssistant() {
                         initial={{ opacity: 0, y: 20, scale: 0.95 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 20, scale: 0.95 }}
-                        className="mb-4 w-[350px] shadow-2xl rounded-xl overflow-hidden border border-border"
+                        className="mb-4 w-[calc(100vw-32px)] sm:w-[350px] shadow-2xl rounded-xl overflow-hidden border border-border"
                     >
                         <Card className="h-[500px] flex flex-col border-0">
                             <CardHeader className="bg-primary text-primary-foreground p-4 flex flex-row items-center justify-between space-y-0">

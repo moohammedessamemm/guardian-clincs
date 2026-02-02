@@ -112,33 +112,7 @@ export function MegaMenu() {
                 Doctors
             </Link>
 
-            {/* Patient Info Dropdown */}
-            <div
-                className="relative group"
-                onMouseEnter={() => setActiveMenu('patients')}
-                onMouseLeave={() => setActiveMenu(null)}
-            >
-                <button className="text-sm font-medium text-blue-100 group-hover:text-white transition-colors py-4">
-                    Patients
-                </button>
 
-                <div className={cn(
-                    "absolute top-full left-1/2 -translate-x-1/2 w-[400px] bg-white rounded-xl shadow-xl border border-slate-100 p-2 transition-all duration-200 origin-top",
-                    activeMenu === 'patients' ? "opacity-100 scale-100 visible" : "opacity-0 scale-95 invisible"
-                )}>
-                    <ul className="grid gap-1">
-                        <ListItem href="/login" title="Patient Portal">
-                            Access your records, appointments, and results.
-                        </ListItem>
-                        <ListItem href="/#location" title="Insurance & Billing">
-                            Accepted plans and payment options.
-                        </ListItem>
-                        <ListItem href="/register" title="Your First Visit">
-                            What to expect and what to bring.
-                        </ListItem>
-                    </ul>
-                </div>
-            </div>
 
             <Link href="/mission" className="text-sm font-medium text-blue-100 hover:text-white transition-colors">
                 Mission

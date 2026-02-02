@@ -434,10 +434,10 @@ export function BookingWizard({ onComplete }: WizardProps) {
                                                     className={`
                                                         h-14 relative overflow-hidden transition-all duration-300 group
                                                         ${!available
-                                                            ? "bg-gradient-to-br from-red-50 to-rose-50 text-red-400 border-red-100 cursor-not-allowed hover:from-red-50 hover:to-rose-50 hover:border-red-100 opacity-90 shadow-sm"
+                                                            ? "bg-gradient-to-br from-red-50 to-rose-50 text-red-400 border-red-100 cursor-not-allowed opacity-90 shadow-sm"
                                                             : selectedTime === time
-                                                                ? "bg-[#004b87] hover:bg-[#003865] shadow-lg scale-105 border-[#004b87] z-10 shadow-blue-900/20"
-                                                                : "hover:border-[#004b87] hover:text-[#004b87] hover:bg-blue-50/50 border-slate-200 text-slate-600 hover:scale-102 hover:shadow-md"
+                                                                ? "bg-[#004b87] shadow-lg scale-105 border-[#004b87] z-10 shadow-blue-900/20"
+                                                                : "hover:border-[#004b87] hover:text-[#004b87] hover:bg-blue-50/50 border-slate-200 text-slate-600 hover:shadow-md active:scale-95 active:bg-blue-50"
                                                         }
                                                     `}
                                                     disabled={!available}

@@ -68,10 +68,10 @@ export default async function PatientDashboard() {
 
             {/* 2. Quick Actions Grid */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <Link href="/appointments/new" className="group">
+                <Link href="/appointments/new" className="group active:scale-[0.98] transition-transform">
                     <Card className="h-full hover:shadow-xl hover:-translate-y-1 transition-all duration-300 ease-out border-none bg-gradient-to-br from-[#004b87] to-[#003865] text-white">
                         <CardContent className="p-6 flex flex-col items-center text-center justify-center gap-3 h-full">
-                            <div className="bg-white/20 p-3 rounded-full group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+                            <div className="bg-white/20 p-3 rounded-full group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 animate-[pulse_3s_ease-in-out_infinite]">
                                 <Plus className="w-6 h-6" />
                             </div>
                             <span className="font-semibold">Book Appointment</span>
@@ -79,7 +79,7 @@ export default async function PatientDashboard() {
                     </Card>
                 </Link>
 
-                <Link href="/patient/records" className="group">
+                <Link href="/patient/records" className="group active:scale-[0.98] transition-transform">
                     <Card className="h-full hover:shadow-xl hover:-translate-y-1 transition-all duration-300 ease-out border-slate-200 hover:border-[#004b87]/50">
                         <CardContent className="p-6 flex flex-col items-center text-center justify-center gap-3 h-full">
                             <div className="bg-emerald-50 p-3 rounded-full text-emerald-600 group-hover:bg-emerald-100 group-hover:scale-110 transition-all duration-300">
@@ -90,7 +90,7 @@ export default async function PatientDashboard() {
                     </Card>
                 </Link>
 
-                <Link href="/patient/prescriptions" className="group">
+                <Link href="/patient/prescriptions" className="group active:scale-[0.98] transition-transform">
                     <Card className="h-full hover:shadow-xl hover:-translate-y-1 transition-all duration-300 ease-out border-slate-200 hover:border-[#004b87]/50">
                         <CardContent className="p-6 flex flex-col items-center text-center justify-center gap-3 h-full">
                             <div className="bg-purple-50 p-3 rounded-full text-purple-600 group-hover:bg-purple-100 group-hover:scale-110 transition-all duration-300">
@@ -101,7 +101,7 @@ export default async function PatientDashboard() {
                     </Card>
                 </Link>
 
-                <Link href="/patient/labs" className="group">
+                <Link href="/patient/labs" className="group active:scale-[0.98] transition-transform">
                     <Card className="h-full hover:shadow-xl hover:-translate-y-1 transition-all duration-300 ease-out border-slate-200 hover:border-[#004b87]/50">
                         <CardContent className="p-6 flex flex-col items-center text-center justify-center gap-3 h-full">
                             <div className="bg-amber-50 p-3 rounded-full text-amber-600 group-hover:bg-amber-100 group-hover:scale-110 transition-all duration-300">
@@ -154,9 +154,6 @@ export default async function PatientDashboard() {
                                             General Checkup
                                         </p>
                                         <div className="flex gap-3 mt-auto">
-                                            <Button size="sm" variant="outline" className="w-full hover:bg-slate-50 transition-colors" asChild>
-                                                <Link href="/patient/appointments">Reschedule</Link>
-                                            </Button>
                                             <Button size="sm" className="w-full bg-[#004b87] hover:bg-[#003865] hover:shadow-md transition-all" asChild>
                                                 <Link href="/patient/appointments">Details</Link>
                                             </Button>
