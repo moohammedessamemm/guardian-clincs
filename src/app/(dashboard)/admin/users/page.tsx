@@ -22,6 +22,7 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Search, Loader2 } from 'lucide-react'
+import { toast } from 'sonner'
 
 interface Profile {
     id: string
@@ -66,7 +67,7 @@ export default function AdminUsersPage() {
 
         if (error) {
             console.error('Error updating role:', error)
-            alert('Failed to update role. Check console for details.')
+            toast.error('Failed to update role. Check console for details.')
             setUsers(originalUsers) // Revert
         }
         setUpdating(null)

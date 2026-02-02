@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { createClient } from '@/lib/supabase/client'
 import { FlaskConical, FileText, Image as ImageIcon, Download, Eye, Calendar, User } from 'lucide-react'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 
@@ -65,7 +66,7 @@ export default function PatientLabsPage() {
             document.body.removeChild(a)
         } catch (error) {
             console.error('Error downloading file:', error)
-            alert('Failed to download file')
+            toast.error('Failed to download file')
         }
     }
 

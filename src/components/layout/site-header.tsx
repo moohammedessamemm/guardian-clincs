@@ -63,11 +63,12 @@ export function SiteHeader() {
     }
 
     return (
-        <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-[#004b87]/95 backdrop-blur-md shadow-lg py-3' : 'bg-[#004b87] py-4'}`}>
+        <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? 'bg-[#004b87]/85 backdrop-blur-md shadow-lg py-3' : 'bg-transparent py-5'}`}>
             <div className="container mx-auto px-6 max-w-7xl flex items-center justify-between">
                 <div className="flex items-center gap-3">
                     {/* Full White Logo */}
-                    <Link href="/" className="relative w-48 h-12">
+                    {/* Logo - Always White for Dark Theme */}
+                    <Link href="/" className="relative w-48 h-12 transition-transform hover:scale-105 duration-300">
                         <Image
                             src="/images/landing/logo-white-final.png"
                             alt="Guardian Clinics"
@@ -112,10 +113,10 @@ export function SiteHeader() {
                                         </>
                                     ) : (
                                         <>
-                                            {['Services', 'Doctors', 'Location'].map((item) => (
+                                            {['Home', 'Services', 'Doctors', 'Mission', 'Vision', 'Contacts', 'Location'].map((item) => (
                                                 <Link
                                                     key={item}
-                                                    href={`/#${item.toLowerCase()}`}
+                                                    href={item === 'Home' ? '/' : item === 'Contacts' ? '/contacts' : item === 'Mission' ? '/mission' : item === 'Vision' ? '/vision' : `/#${item.toLowerCase()}`}
                                                     className="text-lg font-medium text-slate-900 px-4 py-2 hover:bg-slate-50 rounded-md transition-colors"
                                                 >
                                                     {item}
@@ -124,7 +125,7 @@ export function SiteHeader() {
                                             <Link href="/login" className="text-lg font-medium text-slate-900 px-4 py-2 hover:bg-slate-50 rounded-md transition-colors">
                                                 Login
                                             </Link>
-                                            <Link href="/register" className="text-lg font-medium text-[#004b87] px-4 py-2 hover:bg-blue-50 rounded-md transition-colors">
+                                            <Link href="/register" className="text-lg font-medium text-white bg-[#004b87] px-4 py-2 hover:bg-[#003865] rounded-full shadow-lg transition-all hover:scale-105 active:scale-95">
                                                 Book Appointment
                                             </Link>
                                         </>
@@ -158,7 +159,7 @@ export function SiteHeader() {
                                 <Button variant="ghost" className="hidden sm:flex text-blue-100 hover:text-white hover:bg-white/10" asChild>
                                     <Link href="/login">Login</Link>
                                 </Button>
-                                <Button className="hidden sm:flex bg-white text-[#004b87] hover:bg-blue-50 rounded-full px-6 shadow-lg transition-all hover:scale-105 active:scale-95" asChild>
+                                <Button className="hidden sm:flex bg-[#004b87] text-white hover:bg-[#003865] rounded-full px-6 shadow-lg transition-all hover:scale-105 active:scale-95 border border-white/10" asChild>
                                     <Link href="/register">Book Appointment</Link>
                                 </Button>
                             </>

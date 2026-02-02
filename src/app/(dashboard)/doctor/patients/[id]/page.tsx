@@ -9,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Activity, FlaskConical, Save, Pill, Plus, X } from 'lucide-react'
+import { toast } from 'sonner'
 import { Badge } from '@/components/ui/badge'
 
 // Types
@@ -136,13 +137,19 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
             await fetchData()
 
             // Ask if they want to add a prescription
-            if (confirm('SOAP note saved! Would you like to add a prescription for this visit?')) {
-                setLinkedRecordId(data[0].id)
-                setShowPrescriptionForm(true)
-            }
+            toast.success('SOAP note saved!', {
+                description: 'Would you like to add a prescription for this visit?',
+                action: {
+                    label: 'Add Prescription',
+                    onClick: () => {
+                        setLinkedRecordId(data[0].id)
+                        setShowPrescriptionForm(true)
+                    }
+                },
+            })
         } else {
             console.error(error)
-            alert('Failed to save record')
+            toast.error('Failed to save record')
         }
         setSaving(false)
     }
@@ -169,7 +176,7 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
         )
 
         if (validMedications.length === 0) {
-            alert('Please add at least one complete medication')
+            toast.warning('Please add at least one complete medication')
             return
         }
 
@@ -198,10 +205,10 @@ export default function PatientDetailPage({ params }: { params: Promise<{ id: st
             // Refresh prescriptions
             await fetchData()
 
-            alert('✅ Prescription created successfully!')
+            toast.success('Prescription created successfully!')
         } catch (error) {
             console.error('Error creating prescription:', error)
-            alert('Failed to create prescription. Please try again.')
+            toast.error('Failed to create prescription. Please try again.')
         } finally {
             setSendingPrescription(false)
         }

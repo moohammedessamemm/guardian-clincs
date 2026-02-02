@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Pill, Plus, X, Send } from 'lucide-react'
+import { toast } from 'sonner'
 import { Badge } from '@/components/ui/badge'
 
 interface Patient {
@@ -105,7 +106,7 @@ export default function DoctorPrescriptionsPage() {
         console.log('Starting prescription submission...')
 
         if (!selectedPatient) {
-            alert('Please select a patient')
+            toast.warning('Please select a patient')
             return
         }
 
@@ -117,7 +118,7 @@ export default function DoctorPrescriptionsPage() {
         console.log('Valid medications:', validMedications)
 
         if (validMedications.length === 0) {
-            alert('Please add at least one complete medication')
+            toast.warning('Please add at least one complete medication')
             return
         }
 
@@ -156,14 +157,12 @@ export default function DoctorPrescriptionsPage() {
             // Refresh prescriptions
             await fetchData()
 
-            alert('✅ Prescription sent successfully to patient!')
+            toast.success('Prescription sent successfully to patient!')
         } catch (error: any) {
             console.error('Error sending prescription:', error)
             const errorMessage = error?.message || 'Unknown error'
-            const errorDetails = error?.details || ''
-            const errorHint = error?.hint || ''
 
-            alert(`❌ Failed to send prescription.\n\nError: ${errorMessage}\n${errorDetails}\n${errorHint}\n\nPlease check the browser console for more details.`)
+            toast.error(`Failed to send prescription. Error: ${errorMessage}`)
         } finally {
             setSending(false)
         }

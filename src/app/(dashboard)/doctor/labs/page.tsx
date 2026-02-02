@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { FlaskConical, Upload, FileText, Image as ImageIcon, Download } from 'lucide-react'
+import { toast } from 'sonner'
 import { Badge } from '@/components/ui/badge'
 
 interface Patient {
@@ -88,7 +89,7 @@ export default function DoctorLabsPage() {
 
             // Validate file type
             if (!fileType.includes('pdf') && !fileType.includes('image')) {
-                alert('Please upload a PDF or image file')
+                toast.warning('Please upload a PDF or image file')
                 return
             }
 
@@ -100,7 +101,7 @@ export default function DoctorLabsPage() {
         e.preventDefault()
 
         if (!selectedPatient || !testName || !testDate || !file) {
-            alert('Please fill in all required fields and select a file')
+            toast.warning('Please fill in all required fields and select a file')
             return
         }
 
@@ -152,10 +153,10 @@ export default function DoctorLabsPage() {
             // Refresh lab results
             await fetchData()
 
-            alert('Lab result uploaded successfully!')
+            toast.success('Lab result uploaded successfully!')
         } catch (error) {
             console.error('Error uploading lab result:', error)
-            alert('Failed to upload lab result. Please try again.')
+            toast.error('Failed to upload lab result. Please try again.')
         } finally {
             setUploading(false)
         }
@@ -175,7 +176,7 @@ export default function DoctorLabsPage() {
             document.body.removeChild(a)
         } catch (error) {
             console.error('Error downloading file:', error)
-            alert('Failed to download file')
+            toast.error('Failed to download file')
         }
     }
 

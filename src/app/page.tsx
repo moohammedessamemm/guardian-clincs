@@ -112,7 +112,15 @@ export default function LandingPage() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="relative hidden lg:block"
           >
-            <div className="relative rounded-[2.5rem] overflow-hidden shadow-2xl shadow-blue-900/20 bg-white">
+            <motion.div
+              animate={{ y: [0, -15, 0] }}
+              transition={{
+                duration: 6,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+              className="relative rounded-[2.5rem] overflow-hidden shadow-2xl shadow-blue-900/20 bg-white"
+            >
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent z-10" />
               <Image
                 src="/images/landing/hero.png"
@@ -122,31 +130,53 @@ export default function LandingPage() {
                 className="w-full h-auto object-cover transform hover:scale-105 transition-transform duration-700"
                 priority
               />
-            </div>
+            </motion.div>
 
             {/* Floating Card */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+              animate={{
+                opacity: 1,
+                y: 0,
+              }}
               transition={{ delay: 1, duration: 0.5 }}
-              className="absolute -bottom-8 -left-8 bg-white p-5 rounded-2xl shadow-[0_8px_40px_rgba(0,0,0,0.12)] max-w-xs z-20 border border-slate-50"
+              className="absolute -bottom-8 -left-8 z-20"
             >
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center text-[#004b87]">
-                  <Activity className="w-6 h-6" />
+              <motion.div
+                animate={{ y: [0, -10, 0] }}
+                transition={{
+                  duration: 4,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: 1 // Offset from the main image
+                }}
+                className="bg-white p-5 rounded-2xl shadow-[0_8px_40px_rgba(0,0,0,0.12)] max-w-xs border border-slate-50"
+              >
+                <div className="flex items-start gap-4">
+                  <div className="relative">
+                    <div className="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center text-[#004b87] relative z-10">
+                      <Activity className="w-6 h-6" />
+                    </div>
+                    {/* Ripple Effect */}
+                    <motion.div
+                      animate={{ scale: [1, 1.5], opacity: [0.5, 0] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                      className="absolute inset-0 bg-blue-100 rounded-full z-0"
+                    />
+                  </div>
+                  <div>
+                    <p className="font-bold text-slate-900">Health Priority</p>
+                    <p className="text-sm text-slate-500 leading-snug mt-1">Dedicated to precise diagnosis and effective treatment plans.</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="font-bold text-slate-900">Health Priority</p>
-                  <p className="text-sm text-slate-500 leading-snug mt-1">Dedicated to precise diagnosis and effective treatment plans.</p>
-                </div>
-              </div>
+              </motion.div>
             </motion.div>
           </motion.div>
         </div>
       </section>
 
       {/* Why Guardian Section */}
-      <section id="services" className="py-24 bg-white">
+      <section id="services" className="py-24 bg-white scroll-mt-28">
         <div className="container mx-auto px-6 max-w-7xl">
           <div className="text-center max-w-3xl mx-auto mb-16">
             <h2 className="text-3xl lg:text-4xl font-bold text-slate-900 mb-4">Why Choose Guardian?</h2>
@@ -221,24 +251,97 @@ export default function LandingPage() {
       </section>
 
       {/* Image Break / Care Section */}
-      <section className="py-24 bg-slate-900 relative overflow-hidden">
-        <div className="absolute inset-0 opacity-20">
-          <Image src="/images/landing/care.png" alt="Patient Care" fill className="object-cover" />
-        </div>
-        <div className="absolute inset-0 bg-gradient-to-r from-[#002f55] via-[#004b87]/90 to-[#004b87]/80" />
+      <section className="py-32 relative overflow-hidden">
+        {/* Background Base */}
+        <div className="absolute inset-0 bg-slate-900" />
 
-        <div className="container mx-auto px-6 max-w-7xl relative z-10 grid lg:grid-cols-2 gap-12 items-center">
-          <div>
-            <h2 className="text-3xl lg:text-5xl font-bold text-white mb-6">Healing with Compassion</h2>
-            <p className="text-blue-100 text-lg leading-relaxed mb-8 max-w-xl">
-              We believe that a healing environment is just as important as the medicine itself. Experience a clinic where safety, hygiene, and warmth come together.
-            </p>
-            <Button variant="outline" className="h-12 border-blue-200 text-blue-50 hover:bg-white hover:text-[#004b87]">
-              Learn About Our Values
-            </Button>
-          </div>
+        {/* Animated Background Elements */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-[#002f55] via-[#004b87]/90 to-[#004b87]/80 z-10" />
+          <Image
+            src="/images/landing/care.png"
+            alt="Patient Care"
+            fill
+            className="object-cover opacity-20 mix-blend-overlay"
+          />
+
+          {/* Animated Orbs */}
+          <motion.div
+            animate={{
+              scale: [1, 1.2, 1],
+              opacity: [0.3, 0.5, 0.3],
+              x: [0, 50, 0]
+            }}
+            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute top-0 right-0 w-[800px] h-[800px] rounded-full translate-x-1/2 -translate-y-1/2 z-0 will-change-transform"
+            style={{
+              background: 'radial-gradient(circle, rgba(59, 130, 246, 0.2) 0%, transparent 70%)'
+            }}
+          />
+          <motion.div
+            animate={{
+              scale: [1, 1.1, 1],
+              opacity: [0.2, 0.4, 0.2],
+              x: [0, -30, 0]
+            }}
+            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+            className="absolute bottom-0 left-0 w-[600px] h-[600px] rounded-full -translate-x-1/2 translate-y-1/2 z-0 will-change-transform"
+            style={{
+              background: 'radial-gradient(circle, rgba(6, 182, 212, 0.1) 0%, transparent 70%)'
+            }}
+          />
         </div>
-      </section >
+
+        <div className="container mx-auto px-6 max-w-7xl relative z-20 grid lg:grid-cols-2 gap-12 items-center">
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-400/20 text-blue-200 text-sm font-medium mb-6 backdrop-blur-sm"
+            >
+              <Heart className="w-4 h-4 text-blue-300 fill-blue-300/20" />
+              <span>Our Core Philosophy</span>
+            </motion.div>
+
+            <h2 className="text-4xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+              Healing with <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-200 to-cyan-200">
+                Compassion
+              </span>
+            </h2>
+
+            <p className="text-blue-100 text-lg leading-relaxed mb-10 max-w-xl opacity-90">
+              We believe that a healing environment is just as important as the medicine itself. Experience a clinic where safety, hygiene, and warmth come together to create a sanctuary for your recovery.
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Button size="lg" className="h-14 px-8 bg-white text-[#004b87] hover:bg-blue-50 rounded-full font-bold shadow-lg shadow-blue-900/20 group transition-all duration-300 hover:scale-105" asChild>
+                <Link href="#services">
+                  Learn About Our Values
+                  <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
+                </Link>
+              </Button>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="hidden lg:block relative"
+          >
+            {/* Abstract visual element if no image is desired, or keep as spacer */}
+            <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-gradient-to-l from-blue-500/10 to-transparent blur-3xl rounded-full" />
+          </motion.div>
+        </div>
+      </section>
 
       {/* Services Section */}
       <section className="py-24 bg-slate-50">

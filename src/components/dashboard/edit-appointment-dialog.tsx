@@ -22,6 +22,7 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { Loader2, Calendar, Clock, User, Stethoscope, CheckCircle2, XCircle, Clock3, AlertCircle } from 'lucide-react'
+import { toast } from 'sonner'
 import { format } from 'date-fns'
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Card, CardContent } from "@/components/ui/card"
@@ -185,7 +186,7 @@ export function EditAppointmentDialog({ appointment, onUpdate }: EditAppointment
             onUpdate()
         } catch (error) {
             console.error('Error updating appointment:', error)
-            alert('Failed to update appointment')
+            toast.error('Failed to update appointment')
         } finally {
             setLoading(false)
         }

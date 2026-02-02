@@ -62,13 +62,17 @@ export function MegaMenu() {
 
     return (
         <nav className="hidden md:flex items-center gap-6">
+            <Link href="/" className="text-sm font-medium text-blue-100 hover:text-white transition-all px-4 py-2 rounded-full hover:bg-white/10">
+                Home
+            </Link>
+
             {/* Services Dropdown */}
             <div
                 className="relative group"
                 onMouseEnter={() => setActiveMenu('services')}
                 onMouseLeave={() => setActiveMenu(null)}
             >
-                <button className="text-sm font-medium text-blue-100 group-hover:text-white transition-colors py-4">
+                <button className="text-sm font-medium text-blue-100 group-hover:text-white transition-all px-4 py-2 rounded-full group-hover:bg-white/10">
                     Services
                 </button>
 
@@ -109,19 +113,21 @@ export function MegaMenu() {
                     </div>
                 </div>
             </div>
-
             {/* Doctors Link */}
-            <Link href="/#doctors" className="text-sm font-medium text-blue-100 hover:text-white transition-colors">
+            <Link href="/#doctors" className="text-sm font-medium text-blue-100 hover:text-white transition-all px-4 py-2 rounded-full hover:bg-white/10">
                 Doctors
             </Link>
 
-
-
-            <Link href="/mission" className="text-sm font-medium text-blue-100 hover:text-white transition-colors">
+            <Link href="/mission" className="text-sm font-medium text-blue-100 hover:text-white transition-all px-4 py-2 rounded-full hover:bg-white/10">
                 Mission
             </Link>
-            <Link href="/vision" className="text-sm font-medium text-blue-100 hover:text-white transition-colors">
+
+            <Link href="/vision" className="text-sm font-medium text-blue-100 hover:text-white transition-all px-4 py-2 rounded-full hover:bg-white/10">
                 Vision
+            </Link>
+
+            <Link href="/contacts" className="text-sm font-medium text-blue-100 hover:text-white transition-all px-4 py-2 rounded-full hover:bg-white/10">
+                Contacts
             </Link>
         </nav>
     )

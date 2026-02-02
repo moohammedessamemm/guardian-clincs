@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
 import { Loader2, Save, Clock, Calendar } from 'lucide-react'
+import { toast } from 'sonner'
 
 const DAYS = [
     { value: 0, label: 'Sunday' },
@@ -128,10 +129,10 @@ export default function DoctorSchedulePage() {
                 }
             }
 
-            alert('Schedule updated successfully!')
+            toast.success('Schedule updated successfully!')
         } catch (error: any) {
             console.error('Save failed detailed:', JSON.stringify(error, null, 2))
-            alert('Failed to save schedule: ' + (error.message || 'Check console for details'))
+            toast.error('Failed to save schedule: ' + (error.message || 'Check console for details'))
         } finally {
             setSaving(false)
         }
