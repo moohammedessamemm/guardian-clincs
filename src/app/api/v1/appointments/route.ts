@@ -9,6 +9,15 @@ export async function GET() {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    // Security Hardening: Check Role
+    const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
+    const role = profile?.role
+
+    if (!role || !['admin', 'doctor', 'patient', 'staff'].includes(role)) {
+        console.warn(`[SECURITY] Unauthorized access attempt to GET /api/v1/appointments by user ${user.id} with role ${role}`)
+        return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
+
     // RLS will filter results automatically based on the user's role
     const { data, error } = await supabase
         .from('appointments')
@@ -28,6 +37,13 @@ export async function POST(request: Request) {
 
     if (!user) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // Security Hardening: Only Patients can book via this endpoint
+    const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
+    if (profile?.role !== 'patient') {
+        console.warn(`[SECURITY] User ${user.id} (Role: ${profile?.role}) attempted to create appointment via patient API`)
+        return NextResponse.json({ error: 'Only patients can book appointments here' }, { status: 403 })
     }
 
     try {

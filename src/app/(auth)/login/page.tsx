@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Loader2, ArrowRight } from 'lucide-react'
+import { Turnstile } from '@marsidev/react-turnstile'
 
 export default function LoginPage() {
     const router = useRouter()
@@ -18,16 +19,26 @@ export default function LoginPage() {
     const [password, setPassword] = useState('')
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
+    const [captchaToken, setCaptchaToken] = useState<string | null>(null)
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault()
         setLoading(true)
         setError(null)
 
+        if (!captchaToken) {
+            setError('Please complete the security check.')
+            setLoading(false)
+            return
+        }
+
         try {
             const { error } = await supabase.auth.signInWithPassword({
                 email,
                 password,
+                options: {
+                    captchaToken
+                }
             })
 
             if (error) {
@@ -50,12 +61,13 @@ export default function LoginPage() {
             }
         } finally {
             setLoading(false)
+            // Reset captcha on failure/success to force re-verification if needed? 
+            // Usually not needed for simple flows, but good practice if failures persist.
         }
     }
 
     return (
         <div className="min-h-screen grid lg:grid-cols-2">
-            {/* Visual Side */}
             {/* Visual Side */}
             <div className="hidden lg:flex flex-col justify-center items-center relative overflow-hidden text-white p-12 bg-slate-900">
                 {/* Animated Background Image (Doctor) */}
@@ -127,6 +139,14 @@ export default function LoginPage() {
                                 <span className="font-bold">Error:</span> {error}
                             </div>
                         )}
+
+                        <div className="flex justify-center py-2">
+                            <Turnstile
+                                siteKey="0x4AAAAAACWjvXebVN0X5Kfl"
+                                onSuccess={(token) => setCaptchaToken(token)}
+                                options={{ theme: 'light' }}
+                            />
+                        </div>
 
                         <Button
                             type="submit"

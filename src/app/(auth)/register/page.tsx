@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
+import { Turnstile } from '@marsidev/react-turnstile'
 
 import { createClient } from '@/lib/supabase/client'
 import { countries } from '@/lib/data/countries'
@@ -52,6 +53,7 @@ export default function RegisterPage() {
     const [currentStep, setCurrentStep] = useState(1)
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
+    const [captchaToken, setCaptchaToken] = useState<string | null>(null)
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { id, value } = e.target
@@ -108,6 +110,11 @@ export default function RegisterPage() {
         e.preventDefault()
         if (!validateStep(3)) return
 
+        if (!captchaToken) {
+            setError('Please complete the security check.')
+            return
+        }
+
         setLoading(true)
         setError(null)
 
@@ -118,6 +125,7 @@ export default function RegisterPage() {
                 email: formData.email,
                 password: formData.password,
                 options: {
+                    captchaToken,
                     data: {
                         full_name: fullName,
                         role: 'patient',
@@ -349,6 +357,14 @@ export default function RegisterPage() {
                                                 <Label htmlFor="ec_relation">Relationship to Patient</Label>
                                                 <Input id="ec_relation" value={formData.ec_relation} onChange={handleChange} className="bg-slate-50 focus:bg-white transition-colors" />
                                             </div>
+                                        </div>
+
+                                        <div className="flex justify-center pt-4">
+                                            <Turnstile
+                                                siteKey="0x4AAAAAACWjvXebVN0X5Kfl"
+                                                onSuccess={(token) => setCaptchaToken(token)}
+                                                options={{ theme: 'light' }}
+                                            />
                                         </div>
                                     </div>
                                 )}

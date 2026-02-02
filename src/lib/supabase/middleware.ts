@@ -35,13 +35,50 @@ export async function updateSession(request: NextRequest) {
         data: { user },
     } = await supabase.auth.getUser()
 
-    if (
-        !user &&
-        !request.nextUrl.pathname.startsWith('/login') &&
-        !request.nextUrl.pathname.startsWith('/auth')
-    ) {
-        // no user, potentially redirect to login
-        // return NextResponse.redirect(new URL('/login', request.url))
+    const path = request.nextUrl.pathname
+
+    // Define protected prefixes
+    const isProtectedRoute =
+        path.startsWith('/admin') ||
+        path.startsWith('/patient') ||
+        path.startsWith('/doctor') ||
+        path.startsWith('/staff')
+
+    // 1. Redirect unauthenticated users trying to access protected routes
+    if (!user && isProtectedRoute) {
+        const url = request.nextUrl.clone()
+        url.pathname = '/login'
+        url.searchParams.set('next', path)
+        return NextResponse.redirect(url)
+    }
+
+    // 2. Enforce Role-Based Access Control (RBAC)
+    if (user && isProtectedRoute) {
+        // Fetch user role
+        const { data: profile } = await supabase
+            .from('profiles')
+            .select('role')
+            .eq('id', user.id)
+            .single()
+
+        const role = profile?.role
+
+        // Enforce strict rules
+        if (path.startsWith('/admin') && role !== 'admin') {
+            return NextResponse.redirect(new URL('/unauthorized', request.url))
+        }
+
+        if (path.startsWith('/patient') && role !== 'patient' && role !== 'admin') {
+            return NextResponse.redirect(new URL('/unauthorized', request.url))
+        }
+
+        if (path.startsWith('/doctor') && role !== 'doctor' && role !== 'admin') {
+            return NextResponse.redirect(new URL('/unauthorized', request.url))
+        }
+
+        if (path.startsWith('/staff') && role !== 'staff' && role !== 'admin') {
+            return NextResponse.redirect(new URL('/unauthorized', request.url))
+        }
     }
 
     // IMPORTANT: You *must* return the supabaseResponse object as it is. If you're
