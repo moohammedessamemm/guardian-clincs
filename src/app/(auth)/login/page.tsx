@@ -77,9 +77,9 @@ export default function LoginPage() {
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-900/90 via-[#004b87]/80 to-blue-950/90 mix-blend-multiply"></div>
 
                 <div className="relative z-10 max-w-xl text-center space-y-8 backdrop-blur-sm bg-black/10 p-8 rounded-3xl border border-white/10 shadow-2xl">
-                    <div className="flex items-center justify-center mx-auto">
+                    <Link href="/" className="flex items-center justify-center mx-auto hover:opacity-90 transition-opacity">
                         <Image src="/guardian-logo.png" alt="Guardian Clinics" width={220} height={110} className="object-contain drop-shadow-lg" />
-                    </div>
+                    </Link>
                     <p className="text-lg text-blue-50 leading-relaxed font-light drop-shadow-md">
                         Experience healthcare reimagined. Access your records, schedule appointments, and connect with top specialists seamlessly.
                     </p>
@@ -96,15 +96,17 @@ export default function LoginPage() {
 
                     <form onSubmit={handleLogin} className="space-y-6">
                         <div className="mb-8 flex justify-center">
-                            <div className="relative w-24 h-24 bg-white rounded-2xl shadow-sm p-3 ring-1 ring-slate-100 flex items-center justify-center">
-                                <Image
-                                    src="/guardian-logo.png"
-                                    alt="Guardian Clinics"
-                                    fill
-                                    className="object-contain p-1"
-                                    priority
-                                />
-                            </div>
+                            <Link href="/">
+                                <div className="relative w-24 h-24 bg-white rounded-2xl shadow-sm p-3 ring-1 ring-slate-100 flex items-center justify-center hover:scale-105 transition-transform duration-300 cursor-pointer">
+                                    <Image
+                                        src="/guardian-logo.png"
+                                        alt="Guardian Clinics"
+                                        fill
+                                        className="object-contain p-1"
+                                        priority
+                                    />
+                                </div>
+                            </Link>
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="email" className="text-slate-700 font-medium">Email Address</Label>

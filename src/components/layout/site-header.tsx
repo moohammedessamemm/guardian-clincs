@@ -11,7 +11,21 @@ import {
     SheetTitle,
     SheetTrigger,
 } from "@/components/ui/sheet"
-import { Menu } from 'lucide-react'
+import {
+    Menu,
+    Home,
+    HeartPulse,
+    Stethoscope,
+    Users,
+    Flag,
+    Eye,
+    Phone,
+    MapPin,
+    LayoutDashboard,
+    LogOut,
+    Calendar,
+    ChevronRight
+} from 'lucide-react'
 import { MegaMenu } from './mega-menu'
 
 import { createClient } from '@/lib/supabase/client'
@@ -91,46 +105,85 @@ export function SiteHeader() {
                                     <Menu className="h-6 w-6" />
                                 </Button>
                             </SheetTrigger>
-                            <SheetContent side="right" className="w-[300px] sm:w-[400px]">
-                                <SheetHeader>
-                                    <SheetTitle>Menu</SheetTitle>
+                            <SheetContent side="right" className="w-[300px] sm:w-[400px] p-0 border-l border-slate-100 bg-white">
+                                <SheetHeader className="px-6 py-4 border-b border-slate-50 bg-slate-50/50">
+                                    <SheetTitle className="text-left text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#004b87] to-blue-500">Menu</SheetTitle>
                                 </SheetHeader>
-                                <nav className="flex flex-col gap-4 mt-8">
-                                    {user && profile ? (
-                                        <>
-                                            <div className="bg-blue-50 p-4 rounded-lg mb-2">
-                                                <p className="font-medium text-[#004b87]">{profile.full_name}</p>
-                                                <p className="text-xs text-slate-500 capitalize">{profile.role}</p>
-                                            </div>
-                                            <Link href={getDashboardLink()} className="text-lg font-medium text-slate-900 px-4 py-2 hover:bg-slate-50 rounded-md transition-colors">
-                                                Dashboard Overview
+                                <div className="flex flex-col h-full overflow-y-auto pb-20">
+                                    <nav className="flex-1 px-4 py-6 space-y-2">
+                                        {[
+                                            { label: 'Home', href: '/', icon: Home },
+                                            { label: 'Services', href: '/#services', icon: HeartPulse },
+                                            { label: 'Doctors', href: '/#doctors', icon: Stethoscope },
+                                            { label: 'Mission', href: '/mission', icon: Flag },
+                                            { label: 'Vision', href: '/vision', icon: Eye },
+                                            { label: 'Contacts', href: '/contacts', icon: Phone },
+                                            { label: 'Location', href: '/#location', icon: MapPin }
+                                        ].map((item) => (
+                                            <Link
+                                                key={item.label}
+                                                href={item.href}
+                                                className="group flex items-center justify-between px-4 py-3 rounded-xl text-slate-600 hover:text-[#004b87] hover:bg-blue-50 transition-all duration-200"
+                                            >
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-8 h-8 rounded-lg bg-slate-50 text-slate-400 group-hover:bg-white group-hover:text-[#004b87] group-hover:shadow-sm flex items-center justify-center transition-all duration-200">
+                                                        <item.icon className="w-4 h-4" />
+                                                    </div>
+                                                    <span className="font-medium text-base">{item.label}</span>
+                                                </div>
+                                                <ChevronRight className="w-4 h-4 opacity-0 group-hover:opacity-50 -translate-x-2 group-hover:translate-x-0 transition-all" />
                                             </Link>
-                                            <form action="/auth/signout" method="post">
-                                                <button type="submit" className="w-full text-left text-lg font-medium text-red-600 px-4 py-2 hover:bg-red-50 rounded-md transition-colors">
-                                                    Sign Out
-                                                </button>
-                                            </form>
-                                        </>
-                                    ) : (
-                                        <>
-                                            {['Home', 'Services', 'Doctors', 'Mission', 'Vision', 'Contacts', 'Location'].map((item) => (
-                                                <Link
-                                                    key={item}
-                                                    href={item === 'Home' ? '/' : item === 'Contacts' ? '/contacts' : item === 'Mission' ? '/mission' : item === 'Vision' ? '/vision' : `/#${item.toLowerCase()}`}
-                                                    className="text-lg font-medium text-slate-900 px-4 py-2 hover:bg-slate-50 rounded-md transition-colors"
-                                                >
-                                                    {item}
+                                        ))}
+                                    </nav>
+
+                                    <div className="px-6 pb-8 mt-auto space-y-4">
+                                        <div className="h-px bg-slate-100 mb-6" />
+
+                                        {user && profile ? (
+                                            <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                                <div className="bg-gradient-to-br from-slate-50 to-blue-50/50 p-4 rounded-2xl border border-blue-100/50 flex items-center gap-4">
+                                                    <div className="w-12 h-12 rounded-full bg-[#004b87] text-white flex items-center justify-center text-lg font-bold shadow-lg shadow-blue-900/10">
+                                                        {profile.full_name?.charAt(0) || 'U'}
+                                                    </div>
+                                                    <div>
+                                                        <p className="font-bold text-slate-900">{profile.full_name}</p>
+                                                        <p className="text-xs font-medium text-[#004b87] bg-blue-100/50 px-2 py-0.5 rounded-full inline-block capitalize mt-1">
+                                                            {profile.role}
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                                <Link href={getDashboardLink()}>
+                                                    <Button className="w-full justify-start h-12 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-[#004b87] hover:border-blue-200 rounded-xl shadow-sm group">
+                                                        <LayoutDashboard className="w-4 h-4 mr-3 text-slate-400 group-hover:text-[#004b87]" />
+                                                        Dashboard Overview
+                                                    </Button>
                                                 </Link>
-                                            ))}
-                                            <Link href="/login" className="text-lg font-medium text-slate-900 px-4 py-2 hover:bg-slate-50 rounded-md transition-colors">
-                                                Login
-                                            </Link>
-                                            <Link href="/register" className="text-lg font-medium text-white bg-[#004b87] px-4 py-2 hover:bg-[#003865] rounded-full shadow-lg transition-all hover:scale-105 active:scale-95">
-                                                Book Appointment
-                                            </Link>
-                                        </>
-                                    )}
-                                </nav>
+
+                                                <form action="/auth/signout" method="post">
+                                                    <Button variant="ghost" className="w-full justify-start h-12 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-xl">
+                                                        <LogOut className="w-4 h-4 mr-3" />
+                                                        Sign Out
+                                                    </Button>
+                                                </form>
+                                            </div>
+                                        ) : (
+                                            <div className="space-y-3 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                                <Link href="/login" className="block">
+                                                    <Button variant="outline" className="w-full h-12 rounded-xl border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-[#004b87] font-medium">
+                                                        Log In
+                                                    </Button>
+                                                </Link>
+                                                <Link href="/register" className="block">
+                                                    <Button className="w-full h-12 rounded-xl bg-[#004b87] hover:bg-[#003865] text-white font-medium shadow-lg shadow-blue-900/20 group">
+                                                        <Calendar className="w-4 h-4 mr-2 group-hover:animate-pulse" />
+                                                        Book Appointment
+                                                    </Button>
+                                                </Link>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
                             </SheetContent>
                         </Sheet>
                     </div>
