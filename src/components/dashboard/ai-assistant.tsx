@@ -22,12 +22,21 @@ export function AiAssistant() {
             id: '1',
             role: 'assistant',
             content: 'Hi there! I am Guardian AI. How can I assist you with your health today?',
-            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            timestamp: ''
         }
     ])
     const [input, setInput] = useState('')
     const [loading, setLoading] = useState(false)
     const scrollRef = useRef<HTMLDivElement>(null)
+
+    useEffect(() => {
+        // Set initial timestamp on mount to avoid hydration mismatch
+        setMessages(prev => prev.map(msg =>
+            msg.id === '1' && !msg.timestamp
+                ? { ...msg, timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }
+                : msg
+        ))
+    }, [])
 
     useEffect(() => {
         if (scrollRef.current) {

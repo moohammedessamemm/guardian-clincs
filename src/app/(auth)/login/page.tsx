@@ -147,24 +147,15 @@ export default function LoginPage() {
                             </div>
                         )}
 
-                        <div className="flex justify-center py-2 min-h-[65px] w-full">
+                        <div className="flex justify-center py-2 min-h-[65px]">
                             {isMounted && (
-                                <div className="min-h-[65px] min-w-[300px] flex items-center justify-center relative">
-                                    <Turnstile
-                                        siteKey="0x4AAAAAACWjvXebVN0X5Kfl"
-                                        onSuccess={(token) => setCaptchaToken(token)}
-                                        onError={() => {
-                                            console.error('Turnstile Error')
-                                            setError('Security check failed to load. Please refresh.')
-                                        }}
-                                        onExpire={() => setCaptchaToken(null)}
-                                        options={{
-                                            theme: 'light',
-                                            refreshExpired: 'auto',
-                                        }}
-                                        style={{ width: '100%', height: '65px' }}
-                                    />
-                                </div>
+                                <Turnstile
+                                    siteKey="0x4AAAAAACWjvXebVN0X5Kfl"
+                                    injectScript={false}
+                                    onSuccess={(token) => setCaptchaToken(token)}
+                                    onError={() => console.error('Turnstile Error')}
+                                    options={{ theme: 'light' }}
+                                />
                             )}
                         </div>
 
