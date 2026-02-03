@@ -151,7 +151,7 @@ export default function LoginPage() {
                             {isMounted && (
                                 <Turnstile
                                     siteKey="0x4AAAAAACWjvXebVN0X5Kfl"
-                                    injectScript={true}
+                                    injectScript={false}
                                     onSuccess={(token) => setCaptchaToken(token)}
                                     onError={() => console.error('Turnstile Error')}
                                     options={{ theme: 'light' }}
