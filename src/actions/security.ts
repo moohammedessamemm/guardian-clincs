@@ -71,10 +71,10 @@ export async function revokeSession(sessionId: string, userId: string) {
     if (dbError) return { error: dbError.message }
 
     // 2. Kill it in Supabase Auth
-    // The sessionId in our DB is the actual Supabase Auth session ID (sid).
-    // admin.deleteSession(sid) invalidates the JWT.
-    // Casting to any because some typings miss this method
-    const { error: authError } = await (supabase.auth.admin as any).deleteSession(sessionId)
+    // The SDK v2 doesn't expose `deleteSession(id)` reliably in all versions.
+    // We use `signOut(userId)` which invalidates all refresh tokens for the user.
+    // This is a secure "Global Sign Out" fallback.
+    const { error: authError } = await supabase.auth.admin.signOut(userId)
 
     if (authError) {
         console.error('Failed to delete Supabase session:', authError)
