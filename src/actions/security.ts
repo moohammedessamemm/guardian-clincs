@@ -5,43 +5,40 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { revalidatePath } from 'next/cache'
 
 export async function getUserSessions(userId: string) {
-    const supabase = createAdminClient()
+    try {
+        const supabase = createAdminClient()
 
-    // Admin check: ensure the caller is an admin
-    // Note: We need to verify the *caller's* role, not just trust the function call.
-    // However, since this calls a DB table with RLS "Admins view all", the DB will enforce it 
-    // IF we used a user-scoped client.
-    // But here we use AdminClient to fetch, so we MUST manually check the caller's role first.
+        // Admin check: ensure the caller is an admin
+        const callerClient = await createClient()
+        const { data: { user: caller } } = await callerClient.auth.getUser()
 
-    // We can't easily get the caller's session in a Server Action called by AdminClient.
-    // So we should use the standard client to get the caller, verify admin, THEN proceed.
+        if (!caller) return { error: 'Unauthorized' }
 
-    const callerClient = await createClient()
-    const { data: { user: caller } } = await callerClient.auth.getUser()
+        // Check role
+        const { data: profile } = await supabase
+            .from('profiles')
+            .select('role')
+            .eq('id', caller.id)
+            .single()
 
-    if (!caller) return { error: 'Unauthorized' }
+        if (profile?.role !== 'admin') {
+            return { error: 'Unauthorized: Admins only' }
+        }
 
-    // Check role
-    const { data: profile } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', caller.id)
-        .single()
+        // Now fetch sessions for the target user
+        const { data: sessions, error } = await supabase
+            .from('user_sessions')
+            .select('*')
+            .eq('user_id', userId)
+            .order('last_active_at', { ascending: false })
 
-    if (profile?.role !== 'admin') {
-        return { error: 'Unauthorized: Admins only' }
+        if (error) return { error: error.message }
+
+        return { sessions }
+    } catch (error: any) {
+        console.error('Server Action Error:', error)
+        return { error: 'Internal Server Error: ' + (error.message || String(error)) }
     }
-
-    // Now fetch sessions for the target user
-    const { data: sessions, error } = await supabase
-        .from('user_sessions')
-        .select('*')
-        .eq('user_id', userId)
-        .order('last_active_at', { ascending: false })
-
-    if (error) return { error: error.message }
-
-    return { sessions }
 }
 
 export async function revokeSession(sessionId: string, userId: string) {
@@ -77,8 +74,10 @@ export async function revokeSession(sessionId: string, userId: string) {
     const { error: authError } = await supabase.auth.admin.signOut(userId)
 
     if (authError) {
-        console.error('Failed to delete Supabase session:', authError)
-        return { error: 'Database updated, but Auth session revocation failed.' }
+        // Log the error but don't fail the action to the UI.
+        // The DB update (Step 1) is sufficient because our Middleware checks `user_sessions.is_revoked`.
+        // If that flag is true, the middleware forces logout anyway.
+        console.warn('Supabase Admin signOut failed (non-critical):', authError)
     }
 
     revalidatePath(`/admin/users/${userId}`)

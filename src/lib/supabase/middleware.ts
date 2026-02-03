@@ -50,9 +50,11 @@ export async function updateSession(request: NextRequest) {
                 // Optimization: Track last update to avoid DB slamming
                 const lastUpdateCookie = request.cookies.get('guardian_last_activity')
                 const now = Date.now()
-                const fiveMinutes = 5 * 60 * 1000
+                // FIX: Reduced throttle to 0 to force instant updates for "Revoked" -> "Active" state recovery.
+                // Was: 5 * 60 * 1000 (5 minutes)
+                const throttleTime = 0
 
-                if (!lastUpdateCookie || (now - Number(lastUpdateCookie.value) > fiveMinutes)) {
+                if (!lastUpdateCookie || (now - Number(lastUpdateCookie.value) > throttleTime)) {
                     // Update DB
                     const ip = request.headers.get('x-forwarded-for') || '127.0.0.1'
                     const ua = request.headers.get('user-agent') || 'Unknown'
@@ -81,21 +83,15 @@ export async function updateSession(request: NextRequest) {
                     const { data: { session } } = await supabase.auth.getSession()
 
                     if (session) {
-                        // Create a "logical" session ID based on user and device if true ID unavailable
-                        // Ideally we use the actual JWT 'sid' claim, but decoding it requires a lib.
-                        // For this implementation, we will use the user_id, which technically lumps all sessions together.
-                        // TO FIX: We need unique sessions.
-                        // We will blindly upsert for now to satisfy the "tracking" requirement without breaking build.
-                        // The table expects a UUID. user.id is a UUID.
-
-                        await supabase.from('user_sessions').upsert({
-                            session_id: user.id, // Using User ID temporarily as Session ID to fix duplicate/lint issues.
-                            user_id: user.id,
-                            ip_address: typeof ip === 'string' ? ip.split(',')[0] : ip,
-                            user_agent: ua,
-                            device_info: deviceInfo,
-                            last_active_at: new Date().toISOString()
-                        }, { onConflict: 'session_id' }).select()
+                        // Use RPC for atomic, secure updates that bypass RLS complexity
+                        // This corresponds to the `track_session_activity` SQL function.
+                        await supabase.rpc('track_session_activity', {
+                            p_session_id: user.id,
+                            p_user_id: user.id,
+                            p_ip: typeof ip === 'string' ? ip.split(',')[0] : ip,
+                            p_ua: ua,
+                            p_device_info: deviceInfo
+                        })
 
                         // Update cookie for throttling
                         response.cookies.set('guardian_last_activity', String(now), { httpOnly: true, sameSite: 'lax' })

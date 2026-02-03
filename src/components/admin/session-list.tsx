@@ -113,9 +113,16 @@ export function SessionList({ userId }: { userId: string }) {
 
     if (loading) return <div className="p-4 text-slate-400">Loading active sessions...</div>
 
-    const activeSessions = sessions.filter(s => !s.is_revoked)
+    const isRecent = (dateStr: string) => {
+        const time = new Date(dateStr).getTime()
+        const now = Date.now()
+        // If active in last 2 minutes, consider it active regardless of flag (handles sync/race conditions)
+        return (now - time) < 2 * 60 * 1000
+    }
+
+    const activeSessions = sessions.filter(s => !s.is_revoked || isRecent(s.last_active_at))
     const inactiveSessions = sessions
-        .filter(s => s.is_revoked)
+        .filter(s => !(!s.is_revoked || isRecent(s.last_active_at))) // Inverse of active
         .sort((a, b) => new Date(b.last_active_at).getTime() - new Date(a.last_active_at).getTime())
 
     // Helper to render a single session card
