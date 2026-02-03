@@ -42,7 +42,12 @@ export function BookingWizard({ onComplete }: WizardProps) {
     const [selectedSpec, setSelectedSpec] = useState<string>("")
     const [selectedDoctor, setSelectedDoctor] = useState<string>("")
     const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined)
-    const [viewDate, setViewDate] = useState(new Date())
+    const [viewDate, setViewDate] = useState<Date>(new Date())
+    const [isClient, setIsClient] = useState(false)
+
+    useEffect(() => {
+        setIsClient(true)
+    }, [])
     const [selectedTime, setSelectedTime] = useState<string>("")
 
     // Loading State
@@ -348,6 +353,8 @@ export function BookingWizard({ onComplete }: WizardProps) {
                                 {/* Available Days Grid */}
                                 <div className="grid grid-cols-5 gap-3">
                                     {(() => {
+                                        if (!isClient) return <div className="col-span-5 h-60 flex items-center justify-center"><Loader2 className="animate-spin text-slate-300" /></div>
+
                                         const workingDays = new Set(schedules.map(s => s.day_of_week))
                                         const start = startOfMonth(viewDate)
                                         const end = endOfMonth(viewDate)

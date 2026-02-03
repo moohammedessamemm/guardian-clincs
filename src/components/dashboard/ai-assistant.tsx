@@ -12,12 +12,18 @@ interface Message {
     id: string
     role: 'user' | 'assistant'
     content: string
+    timestamp?: string
 }
 
 export function AiAssistant() {
     const [isOpen, setIsOpen] = useState(false)
     const [messages, setMessages] = useState<Message[]>([
-        { id: '1', role: 'assistant', content: 'Hi there! I am Guardian AI. How can I assist you with your health today?' }
+        {
+            id: '1',
+            role: 'assistant',
+            content: 'Hi there! I am Guardian AI. How can I assist you with your health today?',
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        }
     ])
     const [input, setInput] = useState('')
     const [loading, setLoading] = useState(false)
@@ -38,7 +44,12 @@ export function AiAssistant() {
     const handleSend = async () => {
         if (!input.trim()) return
 
-        const userMsg: Message = { id: Date.now().toString(), role: 'user', content: input }
+        const userMsg: Message = {
+            id: Date.now().toString(),
+            role: 'user',
+            content: input,
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        }
         setMessages(prev => [...prev, userMsg])
         setInput('')
         setLoading(true)
@@ -53,11 +64,21 @@ export function AiAssistant() {
             if (!res.ok) throw new Error('Failed to fetch response')
 
             const data = await res.json()
-            const aiMsg: Message = { id: (Date.now() + 1).toString(), role: 'assistant', content: data.response }
+            const aiMsg: Message = {
+                id: (Date.now() + 1).toString(),
+                role: 'assistant',
+                content: data.response,
+                timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            }
             setMessages(prev => [...prev, aiMsg])
         } catch (err) {
             console.error(err)
-            setMessages(prev => [...prev, { id: (Date.now() + 1).toString(), role: 'assistant', content: "I'm encountering a temporary issue. Please try again shortly." }])
+            setMessages(prev => [...prev, {
+                id: (Date.now() + 1).toString(),
+                role: 'assistant',
+                content: "I'm encountering a temporary issue. Please try again shortly.",
+                timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            }])
         } finally {
             setLoading(false)
         }
@@ -127,7 +148,7 @@ export function AiAssistant() {
                                             {msg.content}
                                         </div>
                                         <span className="text-[10px] text-slate-400 px-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                            {msg.timestamp}
                                         </span>
                                     </motion.div>
                                 ))}
