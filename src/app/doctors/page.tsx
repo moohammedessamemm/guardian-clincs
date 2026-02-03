@@ -1,5 +1,6 @@
 
 import { createClient } from '@/lib/supabase/server'
+import { SiteHeader } from '@/components/layout/site-header'
 
 import { User as UserIcon } from 'lucide-react'
 import Image from 'next/image'
@@ -25,6 +26,7 @@ export default async function DoctorsPage() {
 
     return (
         <main className="min-h-screen bg-slate-50">
+            <SiteHeader />
             {/* Custom Header Design - Doctor Background with Overlay */}
             <div className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 min-h-[50vh] flex items-center justify-center overflow-hidden">
                 <div className="absolute inset-0 z-0">
