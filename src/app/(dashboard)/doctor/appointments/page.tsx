@@ -7,8 +7,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Loader2, Calendar, Clock, User, FileText, Search, Phone, History } from 'lucide-react'
+import { Loader2, Calendar, Clock, User, FileText, Search, Phone, History, Check } from 'lucide-react'
 import { format, isToday, isFuture, isPast, parseISO } from 'date-fns'
+import { completeAppointment } from '@/actions/appointments'
+import { toast } from 'sonner'
 
 interface Appointment {
     id: string
@@ -29,6 +31,7 @@ export default function DoctorAppointmentsPage() {
     const [loading, setLoading] = useState(true)
     const [appointments, setAppointments] = useState<Appointment[]>([])
     const [searchQuery, setSearchQuery] = useState('')
+    const [completingId, setCompletingId] = useState<string | null>(null)
 
     useEffect(() => {
         async function loadAppointments() {
@@ -139,7 +142,34 @@ export default function DoctorAppointmentsPage() {
                     </div>
 
                     <div className="flex gap-2">
-                        {/* Placeholder actions - could be expanded */}
+                        {appt.status === 'confirmed' && (
+                            <Button
+                                size="sm"
+                                onClick={async () => {
+                                    setCompletingId(appt.id)
+                                    const result = await completeAppointment(appt.id)
+                                    if (result.error) {
+                                        toast.error(result.error)
+                                    } else {
+                                        toast.success('Appointment completed successfully')
+                                        // Update local state to reflect change immediately
+                                        setAppointments(prev => prev.map(a =>
+                                            a.id === appt.id ? { ...a, status: 'completed' } : a
+                                        ))
+                                    }
+                                    setCompletingId(null)
+                                }}
+                                disabled={completingId === appt.id}
+                                className="bg-emerald-600 hover:bg-emerald-700 text-white border-none"
+                            >
+                                {completingId === appt.id ? (
+                                    <Loader2 className="w-4 h-4 animate-spin mr-1" />
+                                ) : (
+                                    <Check className="w-4 h-4 mr-1" />
+                                )}
+                                Complete
+                            </Button>
+                        )}
                         <Button variant="outline" size="sm" className="w-full md:w-auto">
                             View Details
                         </Button>
