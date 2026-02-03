@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -20,6 +20,11 @@ export default function LoginPage() {
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const [captchaToken, setCaptchaToken] = useState<string | null>(null)
+    const [isMounted, setIsMounted] = useState(false)
+
+    useEffect(() => {
+        setIsMounted(true)
+    }, [])
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -142,12 +147,15 @@ export default function LoginPage() {
                             </div>
                         )}
 
-                        <div className="flex justify-center py-2">
-                            <Turnstile
-                                siteKey="0x4AAAAAACWjvXebVN0X5Kfl"
-                                onSuccess={(token) => setCaptchaToken(token)}
-                                options={{ theme: 'light' }}
-                            />
+                        <div className="flex justify-center py-2 min-h-[65px]">
+                            {isMounted && (
+                                <Turnstile
+                                    siteKey="0x4AAAAAACWjvXebVN0X5Kfl"
+                                    onSuccess={(token) => setCaptchaToken(token)}
+                                    onError={() => console.error('Turnstile Error')}
+                                    options={{ theme: 'light' }}
+                                />
+                            )}
                         </div>
 
                         <Button
