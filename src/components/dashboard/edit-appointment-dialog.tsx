@@ -63,8 +63,8 @@ export function EditAppointmentDialog({ appointment, onUpdate }: EditAppointment
     const [loading, setLoading] = useState(false)
     const [doctors, setDoctors] = useState<Doctor[]>([])
     const [selectedDoctor, setSelectedDoctor] = useState<string>(appointment.doctor_id || appointment.doctor?.id || '')
-    const [date, setDate] = useState(format(new Date(appointment.start_time), 'yyyy-MM-dd'))
-    const [time, setTime] = useState(format(new Date(appointment.start_time), 'HH:mm'))
+    const [date, setDate] = useState('')
+    const [time, setTime] = useState('')
     const [status, setStatus] = useState(appointment.status)
     const supabase = createClient()
 

@@ -1,9 +1,15 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { updateSession } from '@/lib/supabase/middleware'
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
+    // 1. Update Session (Rotates Supabase Tokens)
+    const response = await updateSession(request)
+
+    // 2. Generate Nonce for CSP
     const nonce = Buffer.from(crypto.randomUUID()).toString('base64')
 
+    // 3. Define CSP Policy
     // CSP: Strict policy with Nonce for scripts
     // Whitelisted:
     // - Scripts: 'self', 'unsafe-eval' (dev), 'unsafe-inline' (allowed via nonce)
@@ -11,10 +17,9 @@ export function middleware(request: NextRequest) {
     // - Styles: 'self', 'unsafe-inline' (required for many UI libs)
     // - Frames: 'self', youtube, google maps
     // - Connect: 'self', https: (Supabase, APIs)
-
     const cspHeader = `
     default-src 'self';
-    script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com;
+    script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com 'nonce-${nonce}';
     style-src 'self' 'unsafe-inline';
     img-src 'self' blob: data: https:;
     font-src 'self';
@@ -29,19 +34,10 @@ export function middleware(request: NextRequest) {
         .replace(/\s{2,}/g, ' ')
         .trim()
 
-    const requestHeaders = new Headers(request.headers)
-    requestHeaders.set('x-nonce', nonce)
-    requestHeaders.set('Content-Security-Policy', cspHeader)
-
-    const response = NextResponse.next({
-        request: {
-            headers: requestHeaders,
-        },
-    })
-
+    // 4. Set Headers on the Response
+    // We modify the response returned by updateSession to ensure we keep the Auth Cookies
     response.headers.set('Content-Security-Policy', cspHeader)
-    // Also set X-Nonce in response headers for debugging if needed, though strictly it's for internal use
-    // response.headers.set('X-Nonce', nonce) 
+    response.headers.set('x-nonce', nonce)
 
     return response
 }
