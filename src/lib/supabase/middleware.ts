@@ -83,12 +83,30 @@ export async function updateSession(request: NextRequest) {
                     const { data: { session } } = await supabase.auth.getSession()
 
                     if (session) {
+                        // Extract real Session ID (sid) from JWT to allow multi-device tracking
+                        // This allows tracking Phone and Laptop separately instead of overwriting.
+                        const getTokenPayload = (token: string) => {
+                            try {
+                                const base64Url = token.split('.')[1]
+                                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/')
+                                const jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {
+                                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                                }).join(''));
+                                return JSON.parse(jsonPayload)
+                            } catch (e) {
+                                return {}
+                            }
+                        }
+
+                        const payload = getTokenPayload(session.access_token)
+                        const sessionId = payload.sid || user.id // Fallback to user.id if parse fails (legacy)
+
                         // FORCE LOGOUT CHECK
                         // We must check if the session is revoked in the DB.
                         const { data: dbSession } = await supabase
                             .from('user_sessions')
                             .select('is_revoked, last_active_at')
-                            .eq('session_id', user.id)
+                            .eq('session_id', sessionId)
                             .single()
 
                         if (dbSession?.is_revoked) {
@@ -108,7 +126,7 @@ export async function updateSession(request: NextRequest) {
                         // Use RPC for atomic, secure updates that bypass RLS complexity
                         // This corresponds to the `track_session_activity` SQL function.
                         await supabase.rpc('track_session_activity', {
-                            p_session_id: user.id,
+                            p_session_id: sessionId,
                             p_user_id: user.id,
                             p_ip: typeof ip === 'string' ? ip.split(',')[0] : ip,
                             p_ua: ua,
