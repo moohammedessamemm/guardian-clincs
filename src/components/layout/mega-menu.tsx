@@ -114,7 +114,7 @@ export function MegaMenu() {
                 </div>
             </div>
             {/* Doctors Link */}
-            <Link href="/#doctors" className="text-sm font-medium text-blue-100 hover:text-white transition-all px-4 py-2 rounded-full hover:bg-white/10">
+            <Link href="/doctors" className="text-sm font-medium text-blue-100 hover:text-white transition-all px-4 py-2 rounded-full hover:bg-white/10">
                 Doctors
             </Link>
 

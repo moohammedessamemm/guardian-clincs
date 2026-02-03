@@ -42,7 +42,7 @@ export async function updateSession(request: NextRequest) {
     const isProtectedRoute =
         path.startsWith('/admin') ||
         path.startsWith('/patient') ||
-        path.startsWith('/doctor') ||
+        (path.startsWith('/doctor') && !path.startsWith('/doctors')) ||
         path.startsWith('/staff')
 
     // 1. Redirect unauthenticated users trying to access protected routes

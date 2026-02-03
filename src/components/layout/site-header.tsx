@@ -114,7 +114,7 @@ export function SiteHeader() {
                                         {[
                                             { label: 'Home', href: '/', icon: Home },
                                             { label: 'Services', href: '/#services', icon: HeartPulse },
-                                            { label: 'Doctors', href: '/#doctors', icon: Stethoscope },
+                                            { label: 'Doctors', href: '/doctors', icon: Stethoscope },
                                             { label: 'Mission', href: '/mission', icon: Flag },
                                             { label: 'Vision', href: '/vision', icon: Eye },
                                             { label: 'Contacts', href: '/contacts', icon: Phone },
