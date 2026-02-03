@@ -83,6 +83,28 @@ export async function updateSession(request: NextRequest) {
                     const { data: { session } } = await supabase.auth.getSession()
 
                     if (session) {
+                        // FORCE LOGOUT CHECK
+                        // We must check if the session is revoked in the DB.
+                        const { data: dbSession } = await supabase
+                            .from('user_sessions')
+                            .select('is_revoked, last_active_at')
+                            .eq('session_id', user.id)
+                            .single()
+
+                        if (dbSession?.is_revoked) {
+                            const lastSignIn = new Date(user.last_sign_in_at || 0).getTime()
+                            const lastActive = new Date(dbSession.last_active_at).getTime()
+
+                            // If the sign-in is older than or equal to the last activity (with 2s buffer),
+                            // it means this is the SAME session that was revoked.
+                            // If it were a NEW login, lastSignIn would be > lastActive.
+                            if (lastSignIn <= lastActive + 2000) {
+                                console.log('Enforcing Revocation: Force Logout')
+                                await supabase.auth.signOut()
+                                return NextResponse.redirect(new URL('/login', request.url))
+                            }
+                        }
+
                         // Use RPC for atomic, secure updates that bypass RLS complexity
                         // This corresponds to the `track_session_activity` SQL function.
                         await supabase.rpc('track_session_activity', {
