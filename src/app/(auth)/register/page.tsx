@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Turnstile } from '@marsidev/react-turnstile'
+
 
 import { createClient } from '@/lib/supabase/client'
 import { countries } from '@/lib/data/countries'
@@ -53,7 +53,7 @@ export default function RegisterPage() {
     const [currentStep, setCurrentStep] = useState(1)
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
-    const [captchaToken, setCaptchaToken] = useState<string | null>(null)
+
     const [isMounted, setIsMounted] = useState(false)
 
     useEffect(() => {
@@ -115,10 +115,7 @@ export default function RegisterPage() {
         e.preventDefault()
         if (!validateStep(3)) return
 
-        if (!captchaToken) {
-            setError('Please complete the security check.')
-            return
-        }
+
 
         setLoading(true)
         setError(null)
@@ -130,7 +127,6 @@ export default function RegisterPage() {
                 email: formData.email,
                 password: formData.password,
                 options: {
-                    captchaToken,
                     data: {
                         full_name: fullName,
                         role: 'patient',
@@ -364,17 +360,6 @@ export default function RegisterPage() {
                                             </div>
                                         </div>
 
-                                        <div className="flex justify-center pt-4 min-h-[65px]">
-                                            {isMounted && (
-                                                <Turnstile
-                                                    siteKey="0x4AAAAAACWjvXebVN0X5Kfl"
-                                                    injectScript={false}
-                                                    onSuccess={(token) => setCaptchaToken(token)}
-                                                    onError={() => console.error('Turnstile Error')}
-                                                    options={{ theme: 'light' }}
-                                                />
-                                            )}
-                                        </div>
                                     </div>
                                 )}
                             </div>

@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Loader2, ArrowRight } from 'lucide-react'
-import { Turnstile } from '@marsidev/react-turnstile'
+
 
 export default function LoginPage() {
     const router = useRouter()
@@ -19,7 +19,7 @@ export default function LoginPage() {
     const [password, setPassword] = useState('')
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
-    const [captchaToken, setCaptchaToken] = useState<string | null>(null)
+
     const [isMounted, setIsMounted] = useState(false)
 
     useEffect(() => {
@@ -31,18 +31,13 @@ export default function LoginPage() {
         setLoading(true)
         setError(null)
 
-        if (!captchaToken) {
-            setError('Please complete the security check.')
-            setLoading(false)
-            return
-        }
+
 
         try {
             const { error } = await supabase.auth.signInWithPassword({
                 email,
                 password,
                 options: {
-                    captchaToken
                 }
             })
 
@@ -66,8 +61,7 @@ export default function LoginPage() {
             }
         } finally {
             setLoading(false)
-            // Reset captcha on failure/success to force re-verification if needed? 
-            // Usually not needed for simple flows, but good practice if failures persist.
+
         }
     }
 
@@ -147,17 +141,7 @@ export default function LoginPage() {
                             </div>
                         )}
 
-                        <div className="flex justify-center py-2 min-h-[65px]">
-                            {isMounted && (
-                                <Turnstile
-                                    siteKey="0x4AAAAAACWjvXebVN0X5Kfl"
-                                    injectScript={false}
-                                    onSuccess={(token) => setCaptchaToken(token)}
-                                    onError={() => console.error('Turnstile Error')}
-                                    options={{ theme: 'light' }}
-                                />
-                            )}
-                        </div>
+
 
                         <Button
                             type="submit"
