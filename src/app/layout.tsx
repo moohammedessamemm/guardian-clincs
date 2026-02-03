@@ -31,12 +31,7 @@ export default function RootLayout({
       >
         {children}
         <Toaster />
-        <Script
-          src="https://challenges.cloudflare.com/turnstile/v0/api.js"
-          async
-          defer
-          strategy="afterInteractive"
-        />
+
       </body>
     </html>
   );
