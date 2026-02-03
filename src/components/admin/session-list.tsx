@@ -233,10 +233,10 @@ export function SessionList({ userId }: { userId: string }) {
                 {inactiveSessions.length > 0 && (
                     <div className="space-y-3 pt-2 border-t border-slate-100">
                         <h3 className="text-sm font-medium text-slate-500 uppercase tracking-wider text-[11px]">
-                            Last Session
+                            Last Sessions
                         </h3>
-                        {/* Show only the MOST RECENT inactive session */}
-                        {renderSessionCard(inactiveSessions[0], true)}
+                        {/* Show all inactive sessions */}
+                        {inactiveSessions.map(session => renderSessionCard(session, true))}
                     </div>
                 )}
 

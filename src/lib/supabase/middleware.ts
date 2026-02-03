@@ -1,4 +1,4 @@
-import { createServerClient } from '@supabase/ssr'
+import { jwtDecode } from 'jwt-decode'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function updateSession(request: NextRequest) {
@@ -85,21 +85,19 @@ export async function updateSession(request: NextRequest) {
                     if (session) {
                         // Extract real Session ID (sid) from JWT to allow multi-device tracking
                         // This allows tracking Phone and Laptop separately instead of overwriting.
-                        const getTokenPayload = (token: string) => {
-                            try {
-                                const base64Url = token.split('.')[1]
-                                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/')
-                                const jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {
-                                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-                                }).join(''));
-                                return JSON.parse(jsonPayload)
-                            } catch (e) {
-                                return {}
+                        // Extract real Session ID (sid) from JWT to allow multi-device tracking
+                        // This allows tracking Phone and Laptop separately instead of overwriting.
+                        let sessionId = user.id
+                        try {
+                            const decoded: any = jwtDecode(session.access_token)
+                            if (decoded.sid) {
+                                sessionId = decoded.sid
+                            } else {
+                                console.warn('JWT missing sid claim, falling back to user_id')
                             }
+                        } catch (parseError) {
+                            console.error('JWT Parse Failed:', parseError)
                         }
-
-                        const payload = getTokenPayload(session.access_token)
-                        const sessionId = payload.sid || user.id // Fallback to user.id if parse fails (legacy)
 
                         // FORCE LOGOUT CHECK
                         // We must check if the session is revoked in the DB.
