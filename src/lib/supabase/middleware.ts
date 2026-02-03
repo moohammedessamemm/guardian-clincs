@@ -23,6 +23,7 @@ export async function updateSession(request: NextRequest) {
                             headers: request.headers,
                         },
                     })
+
                     cookiesToSet.forEach(({ name, value, options }) =>
                         response.cookies.set(name, value, options)
                     )
@@ -93,6 +94,16 @@ export async function updateSession(request: NextRequest) {
     //    return myNewResponse
     // If this is not done, you may be causing the browser and server to go out
     // of sync and terminate the user's session prematurely!
+
+    // Ensure Content-Security-Policy is set for all responses
+    response.headers.set('Content-Security-Policy', `
+        default-src 'self';
+        script-src 'self' 'unsafe-eval' 'unsafe-inline' https://challenges.cloudflare.com;
+        frame-src 'self' https://challenges.cloudflare.com;
+        style-src 'self' 'unsafe-inline';
+        img-src 'self' blob: data: https://*.supabase.co;
+        connect-src 'self' https://challenges.cloudflare.com https://*.supabase.co;
+    `.replace(/\s{2,}/g, ' ').trim())
 
     return response
 }
