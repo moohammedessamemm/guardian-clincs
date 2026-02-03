@@ -206,3 +206,48 @@ CREATE POLICY "Doctors create prescriptions" ON prescriptions
         auth.uid() = doctor_id AND
         EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'doctor')
     );
+
+-- -----------------------------------------------------------------------------
+-- 9. USER SESSIONS (Security & Monitoring)
+-- -----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS user_sessions (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    session_id UUID NOT NULL, -- Maps to Supabase Auth session ID
+    user_id UUID REFERENCES profiles(id) ON DELETE CASCADE NOT NULL,
+    ip_address TEXT,
+    user_agent TEXT,
+    device_info JSONB DEFAULT '{}'::JSONB, -- { browser, os, device }
+    last_active_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    is_revoked BOOLEAN DEFAULT FALSE,
+    UNIQUE(session_id)
+);
+
+-- Indexes for performance
+CREATE INDEX IF NOT EXISTS idx_sessions_user_id ON user_sessions(user_id);
+CREATE INDEX IF NOT EXISTS idx_sessions_last_active ON user_sessions(last_active_at);
+
+-- RLS
+ALTER TABLE user_sessions ENABLE ROW LEVEL SECURITY;
+
+DO $$ BEGIN
+    DROP POLICY IF EXISTS "Users view own sessions" ON user_sessions;
+    DROP POLICY IF EXISTS "Admins view all sessions" ON user_sessions;
+    DROP POLICY IF EXISTS "System manages sessions" ON user_sessions;
+END $$;
+
+CREATE POLICY "Users view own sessions" ON user_sessions
+    FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Admins view all sessions" ON user_sessions
+    FOR ALL USING (
+        EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
+    );
+
+-- Allow backend/middleware (which might run as user or service role) to insert/update
+-- Ideally, middleware uses Service Role. If using User context, we need INSERT policy.
+CREATE POLICY "Users receive updates" ON user_sessions
+    FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users update own sessions" ON user_sessions
+    FOR UPDATE USING (auth.uid() = user_id);

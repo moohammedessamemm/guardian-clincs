@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
-import { Search, Loader2, Lock, KeyRound, Trash2, AlertTriangle } from 'lucide-react'
+import { Search, Loader2, Lock, KeyRound, Trash2, AlertTriangle, ShieldAlert } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from "@/components/ui/button"
 import {
@@ -35,6 +35,7 @@ import {
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { updateUserPassword, deleteUser } from "@/actions/admin-users"
+import { SessionList } from "@/components/admin/session-list"
 
 interface Profile {
     id: string
@@ -62,6 +63,15 @@ export default function AdminUsersPage() {
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
     const [userToDelete, setUserToDelete] = useState<Profile | null>(null)
     const [deleteLoading, setDeleteLoading] = useState(false)
+
+    // Session Management State
+    const [sessionDialogOpen, setSessionDialogOpen] = useState(false)
+    const [userForSessions, setUserForSessions] = useState<Profile | null>(null)
+
+    const openSessionDialog = (user: Profile) => {
+        setUserForSessions(user)
+        setSessionDialogOpen(true)
+    }
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -279,6 +289,17 @@ export default function AdminUsersPage() {
                                                     <Button
                                                         variant="ghost"
                                                         size="sm"
+                                                        onClick={() => openSessionDialog(user)}
+                                                        className="h-8 w-8 p-0 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-full"
+                                                        title="View Active Sessions"
+                                                    >
+                                                        <ShieldAlert className="h-4 w-4" />
+                                                        <span className="sr-only">Sessions</span>
+                                                    </Button>
+
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
                                                         onClick={() => openDeleteDialog(user)}
                                                         disabled={user.role === 'admin'} // Prevent deleting admins? Maybe allow but be careful. Let's prevent for safety.
                                                         className="h-8 w-8 p-0 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-full"
@@ -362,6 +383,24 @@ export default function AdminUsersPage() {
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
-        </div>
+
+            <Dialog open={sessionDialogOpen} onOpenChange={setSessionDialogOpen}>
+                <DialogContent className="sm:max-w-2xl">
+                    <DialogHeader>
+                        <div className="flex items-center gap-2 text-blue-600 mb-2">
+                            <ShieldAlert className="h-5 w-5" />
+                            <DialogTitle className="text-[#004b87]">Security & Sessions</DialogTitle>
+                        </div>
+                        <DialogDescription className="text-slate-600">
+                            Active sessions for <span className="font-bold text-slate-900">{userForSessions?.full_name}</span>.
+                            Review and revoke suspicious activity.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="py-4 max-h-[60vh] overflow-y-auto">
+                        {userForSessions && <SessionList userId={userForSessions.id} />}
+                    </div>
+                </DialogContent>
+            </Dialog>
+        </div >
     )
 }
