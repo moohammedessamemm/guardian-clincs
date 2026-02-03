@@ -128,10 +128,10 @@ export default function PatientAppointmentsPage() {
                     <h1 className="text-3xl font-bold tracking-tight text-slate-900">My Appointments</h1>
                     <p className="text-slate-500 mt-1">Manage your upcoming visits and view past history.</p>
                 </div>
-                <Link href="/appointments/new">
-                    <Button className="bg-[#004b87] hover:bg-[#003865] text-white shadow-lg shadow-blue-900/10 transition-all rounded-full px-6">
+                <Link href="/patient/appointments">
+                    <Button className="bg-[#004b87] hover:bg-[#003865] text-white shadow-lg shadow-blue-900/10 transition-all rounded-full px-6" disabled>
                         <CalendarPlus className="mr-2 h-4 w-4" />
-                        Book Appointment
+                        Book Appointment (Coming Soon)
                     </Button>
                 </Link>
             </div>
@@ -165,8 +165,8 @@ export default function PatientAppointmentsPage() {
                             <Calendar className="h-16 w-16 mx-auto text-slate-200 mb-4" />
                             <h3 className="text-lg font-semibold text-slate-900">No Upcoming Appointments</h3>
                             <p className="text-slate-500 mb-6 max-w-sm mx-auto">You have no scheduled visits at the moment. Regular checkups are key to good health.</p>
-                            <Link href="/appointments/new">
-                                <Button variant="outline" className="border-[#004b87] text-[#004b87] hover:bg-blue-50">Schedule Visit</Button>
+                            <Link href="/patient/appointments">
+                                <Button variant="outline" className="border-[#004b87] text-[#004b87] hover:bg-blue-50" disabled>Schedule Visit (Coming Soon)</Button>
                             </Link>
                         </div>
                     ) : (

@@ -191,3 +191,18 @@ CREATE POLICY "Doctors create records" ON medical_records
 -- Knowledge Base Policies
 CREATE POLICY "Everyone can read KB" ON knowledge_base
     FOR SELECT USING (true);
+
+-- Prescription Policies (Added during audit fix)
+CREATE POLICY "Patients view own prescriptions" ON prescriptions
+    FOR SELECT USING (auth.uid() = patient_id);
+
+CREATE POLICY "Doctors view all prescriptions" ON prescriptions
+    FOR SELECT USING (
+        EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role IN ('doctor', 'staff', 'admin'))
+    );
+
+CREATE POLICY "Doctors create prescriptions" ON prescriptions
+    FOR INSERT WITH CHECK (
+        auth.uid() = doctor_id AND
+        EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'doctor')
+    );

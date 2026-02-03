@@ -19,7 +19,7 @@ export const dashboardLinks = [
     // Patient Links
     { label: 'Overview', href: '/patient', icon: LayoutDashboard, roles: ['patient'] },
     { label: 'My Appointments', href: '/patient/appointments', icon: Calendar, roles: ['patient'] },
-    { label: 'Book Appointment', href: '/appointments/new', icon: Calendar, roles: ['patient'] },
+    { label: 'Book Appointment', href: '/patient/appointments', icon: Calendar, roles: ['patient'] },
     { label: 'Medical History', href: '/patient/records', icon: FileText, roles: ['patient'] },
     { label: 'Prescriptions', href: '/patient/prescriptions', icon: Pill, roles: ['patient'] },
     { label: 'Lab Results', href: '/patient/labs', icon: FileText, roles: ['patient'] },
