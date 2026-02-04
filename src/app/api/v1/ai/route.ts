@@ -10,7 +10,10 @@ export async function POST(req: Request) {
         const { data: { user } } = await supabase.auth.getUser()
 
         if (!user) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+            return NextResponse.json({
+                response: "You have to log in first to access Guardian AI's medical features.",
+                sources: []
+            })
         }
 
         const { query, context } = await req.json()
