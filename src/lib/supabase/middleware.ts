@@ -152,6 +152,11 @@ export async function updateSession(request: NextRequest) {
             (path.startsWith('/doctor') && !path.startsWith('/doctors')) ||
             path.startsWith('/staff')
 
+        // 0. Redirect authenticated users away from Auth pages (Login/Register)
+        if (user && (path === '/login' || path === '/register')) {
+            return NextResponse.redirect(new URL('/dashboard', request.url))
+        }
+
         // 1. Redirect unauthenticated users trying to access protected routes
         if (!user && isProtectedRoute) {
             const url = request.nextUrl.clone()
