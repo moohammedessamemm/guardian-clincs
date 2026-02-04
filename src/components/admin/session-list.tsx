@@ -9,6 +9,14 @@ import { getUserSessions, revokeSession } from '@/actions/security' // Adjust im
 import { toast } from 'sonner'
 import { UAParser } from 'ua-parser-js'
 import { formatDistanceToNow } from 'date-fns'
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog"
 
 interface Session {
     id: string
@@ -25,6 +33,9 @@ export function SessionList({ userId }: { userId: string }) {
     // Store full location object now
     const [locations, setLocations] = useState<Record<string, { label: string, isp?: string, lat?: number, lon?: number }>>({})
     const [loading, setLoading] = useState(true)
+
+    const [revokeDialogOpen, setRevokeDialogOpen] = useState(false)
+    const [sessionToRevoke, setSessionToRevoke] = useState<string | null>(null)
 
     useEffect(() => {
         loadSessions()
@@ -86,12 +97,17 @@ export function SessionList({ userId }: { userId: string }) {
         }
     }
 
-    const handleRevoke = async (sessionId: string) => {
-        const confirm = window.confirm('Are you sure you want to revoke this session? The user will be logged out.')
-        if (!confirm) return
+    const openRevokeDialog = (sessionId: string) => {
+        setSessionToRevoke(sessionId)
+        setRevokeDialogOpen(true)
+    }
 
+    const confirmRevoke = async () => {
+        if (!sessionToRevoke) return
+
+        setRevokeDialogOpen(false) // Close immediately for better UX
         toast.loading('Revoking session...')
-        const res = await revokeSession(sessionId, userId)
+        const res = await revokeSession(sessionToRevoke, userId)
 
         if (res.error) {
             toast.error('Revocation failed', { description: res.error })
@@ -99,6 +115,7 @@ export function SessionList({ userId }: { userId: string }) {
             toast.success('Session revoked')
             loadSessions() // Refresh list
         }
+        setSessionToRevoke(null)
     }
 
     const parseUA = (uaString: string) => {
@@ -190,7 +207,7 @@ export function SessionList({ userId }: { userId: string }) {
                     <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleRevoke(session.session_id)}
+                        onClick={() => openRevokeDialog(session.session_id)}
                         className="text-red-600 hover:bg-red-50 hover:text-red-700"
                     >
                         <Trash2 className="w-4 h-4 mr-2" />
@@ -202,45 +219,65 @@ export function SessionList({ userId }: { userId: string }) {
     }
 
     return (
-        <Card className="border-none shadow-none">
-            <CardHeader className="p-0 pb-4">
-                <CardTitle className="flex items-center gap-2 text-lg">
-                    <Globe className="w-5 h-5 text-blue-600" />
-                    Session Activity
-                </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6 p-0">
+        <>
+            <Card className="border-none shadow-none">
+                <CardHeader className="p-0 pb-4">
+                    <CardTitle className="flex items-center gap-2 text-lg">
+                        <Globe className="w-5 h-5 text-blue-600" />
+                        Session Activity
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6 p-0">
 
-                {/* Group 1: Active Sessions */}
-                <div className="space-y-3">
-                    {activeSessions.length > 0 && (
-                        <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
-                            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                            Active Now
-                        </h3>
-                    )}
+                    {/* Group 1: Active Sessions */}
+                    <div className="space-y-3">
+                        {activeSessions.length > 0 && (
+                            <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
+                                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                                Active Now
+                            </h3>
+                        )}
 
-                    {activeSessions.length > 0 ? (
-                        activeSessions.map(session => renderSessionCard(session, false))
-                    ) : (
-                        <div className="text-sm text-slate-500 italic py-2">
-                            No active sessions found. User is currently offline.
+                        {activeSessions.length > 0 ? (
+                            activeSessions.map(session => renderSessionCard(session, false))
+                        ) : (
+                            <div className="text-sm text-slate-500 italic py-2">
+                                No active sessions found. User is currently offline.
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Group 2: Last Session (Only if exists) */}
+                    {inactiveSessions.length > 0 && (
+                        <div className="space-y-3 pt-2 border-t border-slate-100">
+                            <h3 className="text-sm font-medium text-slate-500 uppercase tracking-wider text-[11px]">
+                                Last Sessions
+                            </h3>
+                            {/* Show only the last inactive session */}
+                            {renderSessionCard(inactiveSessions[0], true)}
                         </div>
                     )}
-                </div>
 
-                {/* Group 2: Last Session (Only if exists) */}
-                {inactiveSessions.length > 0 && (
-                    <div className="space-y-3 pt-2 border-t border-slate-100">
-                        <h3 className="text-sm font-medium text-slate-500 uppercase tracking-wider text-[11px]">
-                            Last Sessions
-                        </h3>
-                        {/* Show all inactive sessions */}
-                        {inactiveSessions.map(session => renderSessionCard(session, true))}
-                    </div>
-                )}
+                </CardContent>
+            </Card>
 
-            </CardContent>
-        </Card>
+            <Dialog open={revokeDialogOpen} onOpenChange={setRevokeDialogOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2 text-red-600">
+                            <AlertTriangle className="w-5 h-5" />
+                            Revoke Session
+                        </DialogTitle>
+                        <DialogDescription>
+                            Are you sure you want to revoke this session? The user will be logged out from this device immediately.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                        <Button variant="ghost" onClick={() => setRevokeDialogOpen(false)}>Cancel</Button>
+                        <Button variant="destructive" onClick={confirmRevoke}>Revoke Session</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+        </>
     )
 }

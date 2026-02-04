@@ -274,40 +274,48 @@ export default function AdminUsersPage() {
                                                         day: 'numeric'
                                                     })}
                                                 </TableCell>
-                                                <TableCell className="text-right">
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="sm"
-                                                        onClick={() => openResetDialog(user)}
-                                                        className="h-8 w-8 p-0 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-full"
-                                                        title="Change Password"
-                                                    >
-                                                        <KeyRound className="h-4 w-4" />
-                                                        <span className="sr-only">Change Password</span>
-                                                    </Button>
+                                                <TableCell className="text-right py-3 pr-6">
+                                                    <div className="flex items-center justify-end gap-1 opacity-80 group-hover:opacity-100 transition-all duration-300">
+                                                        <div className="flex items-center bg-white border border-slate-200 shadow-sm rounded-full p-1 gap-1 group-hover:border-slate-300 transition-colors">
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="icon"
+                                                                onClick={() => openResetDialog(user)}
+                                                                className="h-8 w-8 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-all duration-200"
+                                                                title="Change Password"
+                                                            >
+                                                                <KeyRound className="h-4 w-4" />
+                                                                <span className="sr-only">Change Password</span>
+                                                            </Button>
 
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="sm"
-                                                        onClick={() => openSessionDialog(user)}
-                                                        className="h-8 w-8 p-0 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-full"
-                                                        title="View Active Sessions"
-                                                    >
-                                                        <ShieldAlert className="h-4 w-4" />
-                                                        <span className="sr-only">Sessions</span>
-                                                    </Button>
+                                                            <div className="w-px h-4 bg-slate-200 my-auto" />
 
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="sm"
-                                                        onClick={() => openDeleteDialog(user)}
-                                                        disabled={user.role === 'admin'} // Prevent deleting admins? Maybe allow but be careful. Let's prevent for safety.
-                                                        className="h-8 w-8 p-0 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-full"
-                                                        title="Delete User"
-                                                    >
-                                                        <Trash2 className="h-4 w-4" />
-                                                        <span className="sr-only">Delete User</span>
-                                                    </Button>
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="icon"
+                                                                onClick={() => openSessionDialog(user)}
+                                                                className="h-8 w-8 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-full transition-all duration-200"
+                                                                title="View Active Sessions"
+                                                            >
+                                                                <ShieldAlert className="h-4 w-4" />
+                                                                <span className="sr-only">Sessions</span>
+                                                            </Button>
+
+                                                            <div className="w-px h-4 bg-slate-200 my-auto" />
+
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="icon"
+                                                                onClick={() => openDeleteDialog(user)}
+                                                                disabled={user.role === 'admin'}
+                                                                className="h-8 w-8 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-full transition-all duration-200 disabled:opacity-30"
+                                                                title="Delete User"
+                                                            >
+                                                                <Trash2 className="h-4 w-4" />
+                                                                <span className="sr-only">Delete User</span>
+                                                            </Button>
+                                                        </div>
+                                                    </div>
                                                 </TableCell>
                                             </TableRow>
                                         ))
