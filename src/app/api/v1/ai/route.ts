@@ -1,5 +1,8 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
+import { HfInference } from '@huggingface/inference'
+
+const hf = new HfInference(process.env.HUGGING_FACE_ACCESS_TOKEN)
 
 export async function POST(req: Request) {
     try {
@@ -16,8 +19,7 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'Query is required' }, { status: 400 })
         }
 
-        // 1. Search Knowledge Base (Simple text match for now)
-        // In a real app, we'd use pg_vector embeddings here
+        // 1. Search Knowledge Base for Context
         const { data: kbArticles, error } = await supabase
             .from('knowledge_base')
             .select('question, answer')
@@ -26,31 +28,45 @@ export async function POST(req: Request) {
 
         if (error) {
             console.error('KB Search Error:', error)
-            // Fallback: Don't fail, just return no results
         }
 
-        // 2. Formatting the response
-        let responseText = "I couldn't find specific information in my database about that."
-
+        // 2. Construct System Prompt with Context
+        let context = ""
         if (kbArticles && kbArticles.length > 0) {
-            responseText = "Here is what I found:\n\n" +
-                kbArticles.map(a => `**${a.question}**\n${a.answer}`).join('\n\n')
-        } else {
-            // 3. Fallback to a simple rule-based response if KB is empty
-            if (query.toLowerCase().includes('appointment')) {
-                responseText = "You can book an appointment by navigating to the 'Appointments' tab on the left."
-            } else if (query.toLowerCase().includes('prescription')) {
-                responseText = "Prescriptions are managed by your doctor. You can view them in the 'Medical Records' section."
-            }
+            context = "Here is some relevant information from the internal database to help you answer:\n" +
+                kbArticles.map(a => `Q: ${a.question}\nA: ${a.answer}`).join('\n\n')
         }
+
+        const systemPrompt = `You are Guardian AI, a helpful, professional, and empathetic medical assistant for Guardian Medical Systems.
+Your goal is to assist users (patients or staff) with their inquiries about the platform, appointments, and general medical guidance.
+${context ? `\n${context}\nUse the above information to answer the user's question if relevant.` : ""}
+If the user asks about appointments or prescriptions and you don't have specific data, guide them to the appropriate sections of the dashboard ('Appointments' or 'Medical Records').
+Keep your answers concise, friendly, and helpful. Do not make up medical advice not present in the context.`
+
+        // 3. Call Hugging Face Inference API
+        const chatCompletion = await hf.chatCompletion({
+            model: "meta-llama/Llama-3.2-3B-Instruct",
+            messages: [
+                { role: "user", content: systemPrompt + "\n\nUser Question: " + query }
+            ],
+            max_tokens: 500,
+            temperature: 0.7
+        })
+
+        const aiResponse = chatCompletion.choices[0].message.content
 
         return NextResponse.json({
-            response: responseText,
+            response: aiResponse,
             sources: kbArticles || []
         })
 
     } catch (err) {
         console.error('AI Error:', err)
-        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
+        // Fallback if AI service is down or rate limited
+        return NextResponse.json({
+            response: "I apologize, but I'm having trouble connecting to my AI brain right now. Please try again in a moment.",
+            sources: []
+        })
+        // return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
     }
 }

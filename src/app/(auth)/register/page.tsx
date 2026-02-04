@@ -80,6 +80,11 @@ export default function RegisterPage() {
                 setError("Please fill in all required fields.")
                 return false
             }
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+            if (!emailRegex.test(formData.email)) {
+                setError("Please enter a valid email address.")
+                return false
+            }
             if (formData.password !== formData.confirm_password) {
                 setError("Passwords do not match.")
                 return false
@@ -164,7 +169,14 @@ export default function RegisterPage() {
 
         } catch (err: unknown) {
             console.error('Registration Error:', err)
-            const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred'
+            let errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred'
+
+            // Handle specific Supabase auth errors
+            if (errorMessage.toLowerCase().includes("unable to validate email address") ||
+                errorMessage.toLowerCase().includes("invalid format")) {
+                errorMessage = "Please enter a valid email address."
+            }
+
             setError(errorMessage)
         } finally {
             setLoading(false)
