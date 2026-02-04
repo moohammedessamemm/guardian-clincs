@@ -85,13 +85,20 @@ INSTRUCTIONS:
             sources: kbArticles || []
         })
 
-    } catch (err) {
+    } catch (err: any) {
         console.error('AI Error:', err)
-        // Fallback if AI service is down or rate limited
+
+        // Critical: Check if the token is missing and warn the user
+        if (!process.env.HUGGING_FACE_ACCESS_TOKEN) {
+            return NextResponse.json({
+                response: "⚠️ Configuration Error: The Hugging Face API Token is missing. Please add HUGGING_FACE_ACCESS_TOKEN to your Vercel Environment Variables.",
+                sources: []
+            })
+        }
+
         return NextResponse.json({
-            response: "I apologize, but I'm having trouble connecting to my AI brain right now. Please try again in a moment.",
+            response: `I'm having trouble connecting to my AI brain. (Error: ${err.message || 'Unknown'})`,
             sources: []
         })
-        // return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
     }
 }
