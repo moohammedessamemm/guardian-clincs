@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Bot, X, Send, Sparkles, MessageSquare } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { motion, AnimatePresence } from 'framer-motion'
+import { usePathname } from 'next/navigation'
 
 interface Message {
     id: string
@@ -28,6 +29,7 @@ export function AiAssistant() {
     const [input, setInput] = useState('')
     const [loading, setLoading] = useState(false)
     const scrollRef = useRef<HTMLDivElement>(null)
+    const pathname = usePathname()
 
     useEffect(() => {
         // Set initial timestamp on mount to avoid hydration mismatch
@@ -67,7 +69,10 @@ export function AiAssistant() {
             const res = await fetch('/api/v1/ai', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ query: userMsg.content }),
+                body: JSON.stringify({
+                    query: userMsg.content,
+                    context: { path: pathname }
+                }),
             })
 
             if (!res.ok) throw new Error('Failed to fetch response')

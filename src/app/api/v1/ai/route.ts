@@ -13,13 +13,24 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
         }
 
-        const { query } = await req.json()
+        const { query, context } = await req.json()
 
         if (!query) {
             return NextResponse.json({ error: 'Query is required' }, { status: 400 })
         }
 
-        // 1. Search Knowledge Base for Context
+        // 1. Fetch User Role & Profile
+        const { data: profile } = await supabase
+            .from('profiles')
+            .select('role, full_name')
+            .eq('id', user.id)
+            .single()
+
+        const userRole = profile?.role || 'patient'
+        const userName = profile?.full_name || 'User'
+        const currentPath = context?.path || 'unknown'
+
+        // 2. Search Knowledge Base for Context
         const { data: kbArticles, error } = await supabase
             .from('knowledge_base')
             .select('question, answer')
@@ -30,20 +41,34 @@ export async function POST(req: Request) {
             console.error('KB Search Error:', error)
         }
 
-        // 2. Construct System Prompt with Context
-        let context = ""
+        // 3. Construct System Prompt with Rich Context
+        let kbContext = ""
         if (kbArticles && kbArticles.length > 0) {
-            context = "Here is some relevant information from the internal database to help you answer:\n" +
+            kbContext = "Here is some relevant information from the internal database:\n" +
                 kbArticles.map(a => `Q: ${a.question}\nA: ${a.answer}`).join('\n\n')
         }
 
-        const systemPrompt = `You are Guardian AI, a helpful, professional, and empathetic medical assistant for Guardian Medical Systems.
-Your goal is to assist users (patients or staff) with their inquiries about the platform, appointments, and general medical guidance.
-${context ? `\n${context}\nUse the above information to answer the user's question if relevant.` : ""}
-If the user asks about appointments or prescriptions and you don't have specific data, guide them to the appropriate sections of the dashboard ('Appointments' or 'Medical Records').
-Keep your answers concise, friendly, and helpful. Do not make up medical advice not present in the context.`
+        const systemPrompt = `You are Guardian AI, a smart helper for Guardian Medical Systems.
+        
+CURRENT CONTEXT:
+- User: ${userName} (${userRole})
+- Current Page: ${currentPath}
 
-        // 3. Call Hugging Face Inference API
+Your goal is to assist the ${userRole} specifically.
+${userRole === 'doctor' ? "Using medical terminology is appropriate. Focus on efficiency and patient management." : "Use simple, clear language. Be empathetic and comforting."}
+
+${currentPath.includes('appointments') ? "The user is currently looking at the appointment scheduler. Offer help with booking or managing slots." : ""}
+${currentPath.includes('dashboard') ? "The user is on the main dashboard. Help them find their way around." : ""}
+
+KNOWLEDGE BASE:
+${kbContext ? kbContext : "No specific database articles found for this query."}
+
+INSTRUCTIONS:
+- Answer the user's question using the context above.
+- If the user asks something you don't know, guide them to the appropriate section based on their role (e.g., Doctors see all records, Patients see only theirs).
+- Keep answers concise.`
+
+        // 4. Call Hugging Face Inference API
         const chatCompletion = await hf.chatCompletion({
             model: "meta-llama/Llama-3.2-3B-Instruct",
             messages: [
