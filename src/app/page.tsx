@@ -396,7 +396,7 @@ export default function LandingPage() {
             {/* Visual Map Placeholder */}
             <div className="relative h-80 lg:h-auto bg-slate-200 rounded-[2rem] overflow-hidden shadow-inner border border-slate-300">
               <iframe
-                src="https://maps.google.com/maps?q=Above%20Pinocchio%20Kids%20Store,%20Little%20Havana%20Mall,%20Genena%20City%20St,%20Second%20Sharm%20El%20Sheikh&t=&z=15&ie=UTF8&iwloc=&output=embed"
+                src="https://maps.google.com/maps?q=Genena%20City%20Mall,%20Sharm%20El%20Sheikh&t=&z=15&ie=UTF8&iwloc=&output=embed"
                 width="100%"
                 height="100%"
                 style={{ border: 0, filter: 'grayscale(0)' }}

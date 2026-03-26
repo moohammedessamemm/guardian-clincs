@@ -99,7 +99,7 @@ export function AiAssistant() {
     }
 
     return (
-        <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end pointer-events-none font-sans">
+        <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 flex flex-col items-end pointer-events-none font-sans">
             <AnimatePresence>
                 {isOpen && (
                     <motion.div
@@ -107,7 +107,7 @@ export function AiAssistant() {
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 40, scale: 0.9, transition: { duration: 0.2 } }}
                         transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                        className="pointer-events-auto mb-4 w-[calc(100vw-32px)] sm:w-[380px] h-[600px] flex flex-col rounded-[2rem] overflow-hidden shadow-2xl border border-white/20 bg-white/80 backdrop-blur-xl relative"
+                        className="pointer-events-auto mb-4 w-[calc(100vw-32px)] sm:w-[380px] h-[600px] max-h-[calc(100vh-2rem)] origin-bottom-right flex flex-col rounded-[2rem] overflow-hidden shadow-2xl border border-white/20 bg-white/80 backdrop-blur-xl relative"
                     >
                         {/* Ambient Background Gradient */}
                         <div className="absolute inset-0 bg-gradient-to-tr from-blue-50 via-white to-purple-50 -z-10" />
@@ -132,10 +132,10 @@ export function AiAssistant() {
                             <Button
                                 variant="ghost"
                                 size="icon"
-                                className="rounded-full hover:bg-black/5 text-slate-500 transition-colors"
+                                className="rounded-full hover:bg-black/5 text-slate-500 transition-colors group"
                                 onClick={() => setIsOpen(false)}
                             >
-                                <X className="w-5 h-5" />
+                                <X className="w-5 h-5 transition-transform duration-300 group-hover:rotate-90" />
                             </Button>
                         </div>
 

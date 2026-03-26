@@ -96,9 +96,9 @@ export default function LoginPage() {
                     <form onSubmit={handleLogin} className="space-y-6">
                         <div className="mb-8 flex justify-center">
                             <Link href="/">
-                                <div className="relative w-24 h-24 bg-white rounded-2xl shadow-sm p-3 ring-1 ring-slate-100 flex items-center justify-center hover:scale-105 transition-transform duration-300 cursor-pointer">
+                                <div className="relative w-24 h-24 bg-[#004b87] rounded-2xl shadow-sm p-3 ring-1 ring-[#003865]/20 flex items-center justify-center hover:scale-105 transition-transform duration-300 cursor-pointer">
                                     <Image
-                                        src="/guardian-logo.png"
+                                        src="/images/landing/guardian-angel-final.png"
                                         alt="Guardian Clinics"
                                         fill
                                         className="object-contain p-1"

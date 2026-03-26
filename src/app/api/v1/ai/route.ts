@@ -73,7 +73,7 @@ INSTRUCTIONS:
 
         // 4. Call Hugging Face Inference API
         const chatCompletion = await hf.chatCompletion({
-            model: "meta-llama/Llama-3.2-3B-Instruct",
+            model: "meta-llama/Meta-Llama-3-8B-Instruct",
             messages: [
                 { role: "user", content: systemPrompt + "\n\nUser Question: " + query }
             ],
