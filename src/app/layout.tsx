@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Guardian Clinics",
-  description: "Advanced Hospital Management System",
+  title: "Guardian Clinics | Trusted Medical Care in Sharm El Sheikh",
+  description: "Schedule your visit easily with top doctors in Sharm El Sheikh. Enjoy fast booking, trusted medical care, and a seamless healthcare experience.",
 };
 
 export default function RootLayout({
