@@ -61,8 +61,8 @@ export function MegaMenu() {
     ]
 
     return (
-        <nav className="hidden md:flex items-center gap-6">
-            <Link href="/" className="text-sm font-medium text-blue-100 hover:text-white transition-all px-4 py-2 rounded-full hover:bg-white/10">
+        <nav className="hidden md:flex items-center gap-2 lg:gap-6">
+            <Link href="/" className="text-sm font-semibold text-blue-50/90 hover:text-white transition-all px-4 py-2 rounded-full hover:bg-white/10">
                 Home
             </Link>
 
@@ -72,7 +72,7 @@ export function MegaMenu() {
                 onMouseEnter={() => setActiveMenu('services')}
                 onMouseLeave={() => setActiveMenu(null)}
             >
-                <button className="text-sm font-medium text-blue-100 group-hover:text-white transition-all px-4 py-2 rounded-full group-hover:bg-white/10">
+                <button className="text-sm font-semibold text-blue-50/90 group-hover:text-white transition-all px-4 py-2 rounded-full group-hover:bg-white/10">
                     Services
                 </button>
 
@@ -113,20 +113,19 @@ export function MegaMenu() {
                     </div>
                 </div>
             </div>
-            {/* Doctors Link */}
-            <Link href="/doctors" className="text-sm font-medium text-blue-100 hover:text-white transition-all px-4 py-2 rounded-full hover:bg-white/10">
+            <Link href="/doctors" className="text-sm font-semibold text-blue-50/90 hover:text-white transition-all px-4 py-2 rounded-full hover:bg-white/10">
                 Doctors
             </Link>
 
-            <Link href="/mission" className="text-sm font-medium text-blue-100 hover:text-white transition-all px-4 py-2 rounded-full hover:bg-white/10">
+            <Link href="/mission" className="text-sm font-semibold text-blue-50/90 hover:text-white transition-all px-4 py-2 rounded-full hover:bg-white/10">
                 Mission
             </Link>
 
-            <Link href="/vision" className="text-sm font-medium text-blue-100 hover:text-white transition-all px-4 py-2 rounded-full hover:bg-white/10">
+            <Link href="/vision" className="text-sm font-semibold text-blue-50/90 hover:text-white transition-all px-4 py-2 rounded-full hover:bg-white/10">
                 Vision
             </Link>
 
-            <Link href="/contacts" className="text-sm font-medium text-blue-100 hover:text-white transition-all px-4 py-2 rounded-full hover:bg-white/10">
+            <Link href="/contacts" className="text-sm font-semibold text-blue-50/90 hover:text-white transition-all px-4 py-2 rounded-full hover:bg-white/10">
                 Contacts
             </Link>
         </nav>

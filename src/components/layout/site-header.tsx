@@ -77,7 +77,7 @@ export function SiteHeader() {
     }
 
     return (
-        <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 bg-[#004b87] ${scrolled ? 'shadow-lg py-3' : 'py-5'}`}>
+        <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? 'bg-[#004b87]/95 backdrop-blur-md shadow-lg py-3 border-b border-white/10' : 'bg-[#004b87] py-4 md:py-6'}`}>
             <div className="container mx-auto px-6 max-w-7xl flex items-center justify-between">
                 <div className="flex items-center gap-3">
                     {/* Full White Logo */}
@@ -170,13 +170,13 @@ export function SiteHeader() {
                                         ) : (
                                             <div className="space-y-3 animate-in fade-in slide-in-from-bottom-4 duration-500">
                                                 <Link href="/login" className="block">
-                                                    <Button variant="outline" className="w-full h-12 rounded-xl border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-[#004b87] font-medium">
+                                                    <Button variant="outline" className="w-full h-12 rounded-xl border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-[#004b87] font-semibold transition-all hover:border-slate-300">
                                                         Log In
                                                     </Button>
                                                 </Link>
                                                 <Link href="/register" className="block">
-                                                    <Button className="w-full h-12 rounded-xl bg-[#004b87] hover:bg-[#003865] text-white font-medium shadow-lg shadow-blue-900/20 group">
-                                                        <Calendar className="w-4 h-4 mr-2 group-hover:animate-pulse" />
+                                                    <Button className="w-full h-12 rounded-xl bg-[#004b87] hover:bg-[#003865] text-white font-bold shadow-lg shadow-blue-900/20 group transition-all hover:-translate-y-0.5">
+                                                        <Calendar className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
                                                         Book Appointment
                                                     </Button>
                                                 </Link>
@@ -197,7 +197,7 @@ export function SiteHeader() {
                                         {profile.role}
                                     </span>
                                 </div>
-                                <Button className="bg-white text-[#004b87] hover:bg-blue-50 rounded-full px-6 shadow-lg transition-all hover:scale-105 active:scale-95" asChild>
+                                <Button className="bg-white text-[#004b87] font-bold hover:bg-slate-50 rounded-full px-8 py-5 shadow-lg shadow-black/10 transition-all hover:-translate-y-0.5 hover:shadow-xl" asChild>
                                     <Link href={getDashboardLink()}>Overview</Link>
                                 </Button>
                                 {/* Simple Sign Out Icon */}
@@ -209,10 +209,10 @@ export function SiteHeader() {
                             </div>
                         ) : (
                             <>
-                                <Button variant="ghost" className="hidden sm:flex text-blue-100 hover:text-white hover:bg-white/10" asChild>
-                                    <Link href="/login">Login</Link>
+                                <Button variant="ghost" className="hidden sm:flex text-blue-50 font-medium hover:text-white hover:bg-white/10 rounded-full px-6 transition-all" asChild>
+                                    <Link href="/login">Log In</Link>
                                 </Button>
-                                <Button className="hidden sm:flex bg-[#004b87] text-white hover:bg-[#003865] rounded-full px-6 shadow-lg transition-all hover:scale-105 active:scale-95 border border-white/10" asChild>
+                                <Button className="hidden sm:flex bg-white text-[#004b87] font-bold hover:bg-slate-50 rounded-full px-8 py-5 shadow-lg shadow-black/10 transition-all hover:-translate-y-0.5 hover:shadow-xl" asChild>
                                     <Link href="/register">Book Appointment</Link>
                                 </Button>
                             </>
